@@ -1,16 +1,12 @@
 #+OPTIONS: ^:nil
 #+EXPORT_EXCLUDE_TAGS: noexport
+#+TITLE: ETL Test Stand Firmware
 * Table of Contents :TOC:
-- [[#etl-test-stand-firmware][ETL Test Stand Firmware]]
   - [[#build-instructions][Build Instructions]]
   - [[#directories][Directories]]
   - [[#block-diagram][Block Diagram]]
   - [[#hardware-setup][Hardware Setup]]
   - [[#xdma][XDMA]]
-
-* ETL Test Stand Firmware
-
-This is the firmware used for the CMS Endcap Timing Layer (ETL) module and readout board test stands.
 
 ** Build Instructions
 #+begin_src
