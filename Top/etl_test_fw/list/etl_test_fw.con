@@ -1,4 +1,3 @@
 # -*- mode: TCL;-*-
-src/ucf/ge21/clocking.xdc
-src/ucf/ge21/pinout.xdc
-src/ucf/ge21/impl.xdc nosynth
+xdc/pins.xdc
+xdc/timing.xdc

@@ -1,19 +1,20 @@
-lpgbt/src/lpgbt-fpga/downlink/lpgbtfpga_encoder.vhd 2008
-lpgbt/src/lpgbt-fpga/downlink/lpgbtfpga_interleaver.vhd 2008
-lpgbt/src/lpgbt-fpga/downlink/lpgbtfpga_scrambler.vhd 2008
-lpgbt/src/lpgbt-fpga/downlink/lpgbtfpga_txgearbox.vhd 2008
-lpgbt/src/lpgbt-fpga/downlink/rs_encoder_N7K5.vhd 2008
-lpgbt/src/lpgbt-fpga/lpbgtfpga_downlink.vhd 2008
-lpgbt/src/lpgbt-fpga/lpgbtfpga_package.vhd 2008
-lpgbt/src/lpgbt-fpga/lpgbtfpga_uplink.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/descrambler_51bitOrder49.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/descrambler_53bitOrder49.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/descrambler_58bitOrder58.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/descrambler_60bitOrder58.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/fec_rsDecoderN15K13.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/fec_rsDecoderN31K29.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/lpgbtfpga_decoder.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/lpgbtfpga_deinterleaver.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/lpgbtfpga_descrambler.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/lpgbtfpga_framealigner.vhd 2008
-lpgbt/src/lpgbt-fpga/uplink/lpgbtfpga_rxgearbox.vhd 2008
+# -*- mode: TCL;-*-
+lpgbt-fpga/downlink/lpgbtfpga_encoder.vhd
+lpgbt-fpga/downlink/lpgbtfpga_interleaver.vhd
+lpgbt-fpga/downlink/lpgbtfpga_scrambler.vhd
+lpgbt-fpga/downlink/lpgbtfpga_txgearbox.vhd
+lpgbt-fpga/downlink/rs_encoder_N7K5.vhd
+lpgbt-fpga/lpgbtfpga_package.vhd
+lpgbt-fpga/lpgbtfpga_uplink.vhd
+lpgbt-fpga/lpgbtfpga_downlink.vhd
+lpgbt-fpga/uplink/descrambler_51bitOrder49.vhd
+lpgbt-fpga/uplink/descrambler_53bitOrder49.vhd
+lpgbt-fpga/uplink/descrambler_58bitOrder58.vhd
+lpgbt-fpga/uplink/descrambler_60bitOrder58.vhd
+lpgbt-fpga/uplink/fec_rsDecoderN15K13.vhd
+lpgbt-fpga/uplink/fec_rsDecoderN31K29.vhd
+lpgbt-fpga/uplink/lpgbtfpga_decoder.vhd
+lpgbt-fpga/uplink/lpgbtfpga_deinterleaver.vhd
+lpgbt-fpga/uplink/lpgbtfpga_descrambler.vhd
+lpgbt-fpga/uplink/lpgbtfpga_framealigner.vhd
+lpgbt-fpga/uplink/lpgbtfpga_rxgearbox.vhd
