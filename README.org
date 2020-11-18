@@ -1,5 +1,6 @@
 * ETL Test Stand Firmware
-
+** Block Diagram
+[[file:doc/structure/structure.gv.svg]]
 ** Build instructions:
 #+begin_src
 make

@@ -1,0 +1,64 @@
+digraph {
+  graph [fontname = "helvetica"];
+  node [fontname = "helvetica" style=filled color=lightblue];
+  edge [fontname = "helvetica"];
+  node [width=0.5 shape=rectangle];
+
+  "PCIE" -> "K800 Infra"
+  {rank=same; "SFP/Firefly", "PCIE"}
+  {rank=same; "IPBus\nFabric Sel" , "MGT\nWrapper"}
+  //"etl_test_fw"
+  //"etl_test_fw" -> "K800 Infra"
+  //"etl_test_fw" -> "IPBus\nFabric Sel"
+  //"etl_test_fw" -> "MGT\nWrapper"
+  //"etl_test_fw" -> "Readout\nBoards"
+  //{rank=same; "K800 Infra", "IPBus\nFabric Sel", "MGT\nWrapper", "Readout\nBoards"}
+
+  "IPBus\nFabric Sel" -> "MGT\nWrapper"
+  "IPBus\nFabric Sel" -> "Readout\nBoard"
+
+  subgraph cluster_k800 {
+    graph[style=dotted];
+    label=<<FONT POINT-SIZE="20">IPBus Infrastructure</FONT>>
+    labelloc="bot"
+    "K800 Infra" -> "Clock\nGeneration"
+    "K800 Infra" -> "XDMA"
+    "K800 Infra" -> "AXI IPBus\nTransport"
+    "K800 Infra" -> "IPBus\nTransactor"
+    //"XDMA" -> "AXI IPBus\nTransport" -> "IPBus\nTransactor"
+    {rank=same; "XDMA" , "AXI IPBus\nTransport" , "IPBus\nTransactor"}
+  }
+  //"IPBus\nFabric Sel" -> "Readout\nBoards"
+
+
+  "SFP/Firefly" -> "MGT\nWrapper"
+  "MGT\nWrapper" -> "Readout\nBoard"
+
+  subgraph cluster_readout_board {
+    graph[style=dotted];
+    label=<<FONT POINT-SIZE="20">Readout Board</FONT>>
+    labelloc="bot"
+    "Readout\nBoard" -> "DAQ\nLPGBT"
+    "Readout\nBoard" -> "Trigger\nLPGBT"
+    "Readout\nBoard" -> "GBT-SC\nController"
+
+    "GBT-SC\nController" -> "ETROC\nSlow-Control"
+    "DAQ\nLPGBT" -> "ETROC TX"
+    "DAQ\nLPGBT" -> "ETROC RX"
+    "Trigger\nLPGBT" -> "ETROC Trigger Rx"
+
+    subgraph cluster_etroc {
+      graph[style=dotted];
+      label=<<FONT POINT-SIZE="20">ETROC</FONT>>
+      labelloc="bot"
+      "ETROC\nSlow-Control"
+      "ETROC TX"
+      "ETROC RX"
+      "ETROC Trigger Rx"
+    }
+  }
+
+  "IPBus\nTransactor" -> "IPBus\nFabric Sel"
+
+
+}
