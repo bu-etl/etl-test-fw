@@ -23,3 +23,55 @@ make
 #+end_src
 ** Block Diagram
 [[file:doc/structure/structure.gv.svg]]
+** XDMA
+*** Installation
+**** 1. Install the XDMA Kernel Driver
+Based on instructions from https://www.xilinx.com/support/answers/65444.html
+
+XDMA driver should be compiled from source. Code is at:
+https://xilinx.github.io/dma_ip_drivers/2019.2/linux-kernel/html/build.html
+
+A working recipe tested on Ubuntu 16.04 is:
+
+#+BEGIN_SRC  sh
+sudo apt-get install libaio1 libaio-dev
+git clone https://github.com/Xilinx/dma_ip_drivers
+cd dma_ip_drivers/QDMA/linux-kernel
+make clean && make
+sudo make install
+sudo insmod bin/qdma-pf.ko
+#+END_SRC
+
+**** 2. Set up XDMA uDEV Rules
+
+For non-root access to the XDMA driver you should add a udev rule:
+
+#+BEGIN_SRC sh
+sudo wget https://github.com/RHSResearchLLC/XilinxAR65444/raw/master/Linux/Xilinx_Answer_65444_Linux_Files/etc/udev/rules.d/xdma-udev-command.sh https://github.com/RHSResearchLLC/XilinxAR65444/raw/master/Linux/Xilinx_Answer_65444_Linux_Files/etc/udev/rules.d/60-xdma.rules -P /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+#+END_SRC
+
+**** 3. Reboot
+n.b you may need to reboot after installation before this works
+ - try rebooting with a bitstream loaded already
+
+**** 4. Check for the XDMA Device
+
+The lspci command in Unix can be used to list and display information about devices connected to the
+system’s PCI(e) buses. After running ~/sys/bus/pci/rescan~, you should run lspci to check that the
+Xilinx device has been detected correctly - if it is, the output of lspci will contain a line like:
+
+#+BEGIN_SRC
+01:00.0 Serial controller: Xilinx Corporation Device 8031
+#+END_SRC
+
+You should also now see xdma devices in ~/dev/~, e.g.
+#+begin_src
+$ ls /dev/x*
+/dev/xdma0_c2h_0     /dev/xdma0_events_10  /dev/xdma0_events_14  /dev/xdma0_events_4  /dev/xdma0_events_8
+/dev/xdma0_control   /dev/xdma0_events_11  /dev/xdma0_events_15  /dev/xdma0_events_5  /dev/xdma0_events_9
+/dev/xdma0_events_0  /dev/xdma0_events_12  /dev/xdma0_events_2   /dev/xdma0_events_6  /dev/xdma0_h2c_0
+/dev/xdma0_events_1  /dev/xdma0_events_13  /dev/xdma0_events_3   /dev/xdma0_events_7
+#+end_src
+
