@@ -1,0 +1,7 @@
+# -*- mode: TCL;-*-
+readout_board/*.vhd
+wrappers/lpgbt_link_wrapper.vhd
+wrappers/lpgbt_pkg.vhd
+wrappers/sc_wrapper.vhd
+wrappers/mgt_wrapper.vhd
+ip/kcu105_mgts/kcu105_mgts.xci

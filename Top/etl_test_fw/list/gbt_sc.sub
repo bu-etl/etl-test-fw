@@ -1,0 +1,14 @@
+# -*- mode: TCL;-*-
+# IC / SCA
+gbt-sc/GBT-SC/gbtsc_top.vhd
+gbt-sc/GBT-SC/IC/ic_deserializer.vhd
+gbt-sc/GBT-SC/IC/ic_rx_fifo.vhd
+gbt-sc/GBT-SC/IC/ic_rx.vhd
+gbt-sc/GBT-SC/IC/ic_top.vhd
+gbt-sc/GBT-SC/IC/ic_tx.vhd
+gbt-sc/GBT-SC/SCA/sca_deserializer.vhd
+gbt-sc/GBT-SC/SCA/sca_pkg.vhd
+gbt-sc/GBT-SC/SCA/sca_rx_fifo.vhd
+gbt-sc/GBT-SC/SCA/sca_rx.vhd
+gbt-sc/GBT-SC/SCA/sca_top.vhd
+gbt-sc/GBT-SC/SCA/sca_tx.vhd

@@ -1,0 +1,12 @@
+[submodule "ipbus-firmware"]
+	path = ipbus-firmware
+	url = https://github.com/ipbus/ipbus-firmware
+[submodule "gbt-sc"]
+	path = gbt-sc
+	url = https://gitlab.cern.ch/gbtsc-fpga-support/gbt-sc
+[submodule "lpgbt-fpga"]
+	path = lpgbt-fpga
+	url = https://gitlab.cern.ch/gbt-fpga/lpgbt-fpga
+[submodule "Hog"]
+	path = Hog
+	url = https://gitlab.cern.ch/hog/Hog

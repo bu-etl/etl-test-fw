@@ -1,0 +1,8 @@
+* ETL Test Stand Firmware
+
+** Build instructions:
+#+begin_src
+make
+#+end_src
+
+(make sure you ~git submodule init && git submodule update~ first)
