@@ -1,9 +1,25 @@
 * ETL Test Stand Firmware
-** Block Diagram
-[[file:doc/structure/structure.gv.svg]]
 ** Build instructions:
 #+begin_src
 make
 #+end_src
 
 (make sure you ~git submodule init && git submodule update~ first)
+** Directories
+#+begin_src
+├── README.org     -- This readme
+├── Makefile       -- GNU Makefile
+├── readout_board  -- Readout Board Firmware
+├── etroc          -- ETROC Firmware
+├── wrappers       -- Wrappers around IP/Submodules
+├── xdc            -- XDC Constraints Files
+├── doc            -- Documentation & Images
+├── ip             -- Xilinx IP
+├── lpgbt-fpga     -- Submodule: LPGBT-FPGA Core
+├── gbt-sc         -- Submodule: CERN GBT-SC Core
+├── ipbus-firmware -- Submodule: IPBus Firmware
+├── Top            -- Hog Projects
+└── Hog            -- Hog Build System
+#+end_src
+** Block Diagram
+[[file:doc/structure/structure.gv.svg]]
