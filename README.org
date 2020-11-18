@@ -1,8 +1,18 @@
+#+OPTIONS: ^:nil
+#+EXPORT_EXCLUDE_TAGS: noexport
+* Table of Contents :TOC:
+- [[#etl-test-stand-firmware][ETL Test Stand Firmware]]
+  - [[#build-instructions][Build Instructions]]
+  - [[#directories][Directories]]
+  - [[#block-diagram][Block Diagram]]
+  - [[#hardware-setup][Hardware Setup]]
+  - [[#xdma][XDMA]]
+
 * ETL Test Stand Firmware
 
 This is the firmware used for the CMS Endcap Timing Layer (ETL) module and readout board test stands.
 
-** Build instructions:
+** Build Instructions
 #+begin_src
 make
 #+end_src
@@ -27,7 +37,7 @@ make
 ** Block Diagram
 [[file:doc/structure/structure.gv.svg]]
 ** Hardware Setup
-The ETl Test Stand Firmware is designed to run on a KCU105 evaluation board: https://www.xilinx.com/products/boards-and-kits/kcu105.html
+The ETL Test Stand Firmware is designed to run on a KCU105 evaluation board: https://www.xilinx.com/products/boards-and-kits/kcu105.html
 #+attr_org: :width 1000px
 [[file:doc/images/kcu_105.png]]
 
