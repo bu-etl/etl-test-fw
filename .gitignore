@@ -7,3 +7,5 @@ daq_tb
 *.cf
 ip/*/*
 !ip/*/*.xci
+registers/*
+!registers/*.vhd
