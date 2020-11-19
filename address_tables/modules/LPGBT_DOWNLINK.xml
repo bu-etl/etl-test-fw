@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<node id="DOWNLINK">
+  <node id="RESET" address="0x0" mask="0x00000001" permission="w" description="Reset this Downlink"/>
+  <node id="READY" address="0x1" mask="0x00000001" permission="r" description="LPGBT Downlink Ready"/>
+</node>

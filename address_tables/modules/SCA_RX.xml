@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<node id="SCA_RX">
+  <node id="RX_LEN"         address="0x0" mask="0x000000ff" permission="r" description="Reply: The length qualifier field specifies the number of bytes contained in the DATA field."/>
+  <node id="RX_ADDRESS"     address="0x0" mask="0x0000ff00" permission="r" description="Reply: It represents the packet destination address. The address is one-bytelong. By default, the GBT-SCA use address 0x00."/>
+  <node id="RX_CONTROL"     address="0x0" mask="0x00ff0000" permission="r" description="Reply: The control field is 1 byte in length and contains frame sequence numbers of the currently transmitted frame and the last correctly received frame. The control field is also used to convey three supervisory level commands: Connect, Reset, and Test."/>
+  <node id="RX_TRANSID"     address="0x0" mask="0xff000000" permission="r" description="Reply: transaction ID field (According to the SCA manual)"/>
+  <node id="RX_ERR"         address="0x1" mask="0x000000ff" permission="r" description="Reply: The Error Flag field is present in the channel reply frames to indicate error conditions encountered in the execution of a command. If no errors are found, its value is 0x00."/>
+  <node id="RX_RECEIVED"    address="0x1" mask="0x00000100" permission="r" description="Reply received flag (pulse)"/>
+  <node id="RX_CHANNEL"     address="0x1" mask="0x000ff000" permission="r" description="Reply: The channel field specifies the destination interface of the request message (ctrl/spi/gpio/i2c/jtag/adc/dac)."/> <!--size = to # of scas-->
+  <node id="RX_DATA"        address="0x2" mask="0xffffffff" permission="r" description="Reply: The Data field is command dependent field whose length is defined by the length qualifier field. For example, in the case of a read/write operation on a GBT-SCA internal register, it contains the value written/read from the register."/>
+</node>

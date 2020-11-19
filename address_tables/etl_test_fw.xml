@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<node id="TOP">
+  <node id="CSM"         module="file://modules/CSM.xml"        address="0x0"/>
+</node>

@@ -10,3 +10,6 @@
 [submodule "Hog"]
 	path = Hog
 	url = https://gitlab.cern.ch/hog/Hog
+[submodule "uHAL_AXI_regmap"]
+	path = regmap
+	url = https://github.com/andrewpeck/uHAL_AXI_regmap
