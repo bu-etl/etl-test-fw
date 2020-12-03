@@ -11,6 +11,6 @@
   </node>
 
   <!-- LPGBT-FPGA  -->
-  <node id="SC"   address="0x10" module="file://GBT-SC.xml"/>
+  <node id="SC"   address="0x10" module="file://GBT_SC.xml"/>
 
 </node>
