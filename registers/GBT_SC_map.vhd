@@ -3,71 +3,53 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.AXIRegPkg.all;
-use work.types.all;
-use work.GBT-SC_Ctrl.all;
-entity GBT-SC_interface is
+use work.GBT_SC_Ctrl.all;
+entity GBT_SC_wb_interface is
   port (
-    clk_axi          : in  std_logic;
-    reset_axi_n      : in  std_logic;
-    slave_readMOSI   : in  AXIReadMOSI;
-    slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
-    slave_writeMOSI  : in  AXIWriteMOSI;
-    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
-    Mon              : in  GBT-SC_Mon_t;
-    Ctrl             : out GBT-SC_Ctrl_t
+    clk         : in  std_logic;
+    reset       : in  std_logic;
+    wb_addr     : in  std_logic_vector(31 downto 0);
+    wb_wdata    : in  std_logic_vector(31 downto 0);
+    wb_strobe   : in  std_logic;
+    wb_write    : in  std_logic;
+    wb_rdata    : out std_logic_vector(31 downto 0);
+    wb_ack      : out std_logic;
+    wb_err      : out std_logic;
+    mon         : in  GBT_SC_Mon_t;
+    ctrl        : out GBT_SC_Ctrl_t
     );
-end entity GBT-SC_interface;
-architecture behavioral of GBT-SC_interface is
-  signal localAddress       : slv_32_t;
-  signal localRdData        : slv_32_t;
-  signal localRdData_latch  : slv_32_t;
-  signal localWrData        : slv_32_t;
-  signal localWrEn          : std_logic;
-  signal localRdReq         : std_logic;
-  signal localRdAck         : std_logic;
-
-
+end entity GBT_SC_wb_interface;
+architecture behavioral of GBT_SC_wb_interface is
+  type slv32_array_t  is array (integer range <>) of std_logic_vector( 31 downto 0);
+  signal localRdData : std_logic_vector (31 downto 0) := (others => '0');
+  signal localWrData : std_logic_vector (31 downto 0) := (others => '0');
   signal reg_data :  slv32_array_t(integer range 0 to 40);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 40) := (others => x"00000000");
+  constant DEFAULT_REG_DATA : slv32_array_t(integer range 0 to 40) := (others => x"00000000");
 begin  -- architecture behavioral
 
-  -------------------------------------------------------------------------------
-  -- AXI 
-  -------------------------------------------------------------------------------
-  -------------------------------------------------------------------------------
-  AXIRegBridge : entity work.axiLiteReg
-    port map (
-      clk_axi     => clk_axi,
-      reset_axi_n => reset_axi_n,
-      readMOSI    => slave_readMOSI,
-      readMISO    => slave_readMISO,
-      writeMOSI   => slave_writeMOSI,
-      writeMISO   => slave_writeMISO,
-      address     => localAddress,
-      rd_data     => localRdData_latch,
-      wr_data     => localWrData,
-      write_en    => localWrEn,
-      read_req    => localRdReq,
-      read_ack    => localRdAck);
+  wb_rdata <= localRdData;
+  localWrData <= wb_wdata;
 
-  latch_reads: process (clk_axi) is
-  begin  -- process latch_reads
-    if clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      if localRdReq = '1' then
-        localRdData_latch <= localRdData;        
+  -- acknowledge
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      if (reset='1') then
+        wb_ack  <= '0';
+      else
+        wb_ack  <= wb_strobe;
       end if;
     end if;
-  end process latch_reads;
-  reads: process (localRdReq,localAddress,reg_data) is
-  begin  -- process reads
-    localRdAck  <= '0';
-    localRdData <= x"00000000";
-    if localRdReq = '1' then
-      localRdAck  <= '1';
-      case to_integer(unsigned(localAddress(5 downto 0))) is
+  end process;
 
-        when 2 => --0x2
+  -- reads from slave
+  reads: process (clk) is
+  begin  -- process reads
+    if rising_edge(clk) then  -- rising clock edge
+      localRdData <= x"00000000";
+      if wb_strobe='1' then
+        case to_integer(unsigned(wb_addr(5 downto 0))) is
+          when 2 => --0x2
           localRdData( 0)            <=  reg_data( 2)( 0);                     --Request a write config to the GBTx (IC)
           localRdData( 1)            <=  reg_data( 2)( 1);                     --Request a read config to the GBTx (IC)
           localRdData(15 downto  8)  <=  reg_data( 2)(15 downto  8);           --I2C address of the GBTx
@@ -138,14 +120,12 @@ begin  -- architecture behavioral
         when 36 => --0x24
           localRdData(31 downto 16)  <=  reg_data(36)(31 downto 16);           --Number of words/bytes to be read (only for read transactions)
 
-
         when others =>
           localRdData <= x"00000000";
-      end case;
+        end case;
+      end if;
     end if;
   end process reads;
-
-
 
 
   -- Register mapping to ctrl structures
@@ -169,46 +149,14 @@ begin  -- architecture behavioral
   Ctrl.SLAVE.TX_NUM_BYTES_TO_READ   <=  reg_data(36)(31 downto 16);     
 
 
-  reg_writes: process (clk_axi, reset_axi_n) is
+  -- writes to slave
+  reg_writes: process (clk) is
   begin  -- process reg_writes
-    if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-      reg_data( 2)( 0)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_START_WRITE;
-      reg_data( 2)( 1)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_START_READ;
-      reg_data(21)( 2 downto  0)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.SCA_ENABLE;
-      reg_data( 5)( 7 downto  0)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_DATA_TO_GBTX;
-      reg_data( 9)( 7 downto  0)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_CMD;
-      reg_data( 2)(15 downto  8)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_GBTX_ADDR;
-      reg_data( 9)(15 downto  8)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_ADDRESS;
-      reg_data( 9)(23 downto 16)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_TRANSID;
-      reg_data( 9)(31 downto 24)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_CHANNEL;
-      reg_data( 3)(31 downto 16)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_REGISTER_ADDR;
-      reg_data( 4)(31 downto 16)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_NUM_BYTES_TO_READ;
-      reg_data(10)(31 downto  0)  <= DEFAULT_GBT-SC_CTRL_t.MASTER.TX_DATA;
-      reg_data(34)( 0)  <= DEFAULT_GBT-SC_CTRL_t.SLAVE.TX_START_WRITE;
-      reg_data(34)( 1)  <= DEFAULT_GBT-SC_CTRL_t.SLAVE.TX_START_READ;
-      reg_data(37)( 7 downto  0)  <= DEFAULT_GBT-SC_CTRL_t.SLAVE.TX_DATA_TO_GBTX;
-      reg_data(34)(15 downto  8)  <= DEFAULT_GBT-SC_CTRL_t.SLAVE.TX_GBTX_ADDR;
-      reg_data(35)(31 downto 16)  <= DEFAULT_GBT-SC_CTRL_t.SLAVE.TX_REGISTER_ADDR;
-      reg_data(36)(31 downto 16)  <= DEFAULT_GBT-SC_CTRL_t.SLAVE.TX_NUM_BYTES_TO_READ;
+    if (rising_edge(clk)) then  -- rising clock edge
 
-    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      Ctrl.MASTER.TX_RESET <= '0';
-      Ctrl.MASTER.RX_RESET <= '0';
-      Ctrl.MASTER.TX_WR <= '0';
-      Ctrl.MASTER.RX_RD <= '0';
-      Ctrl.MASTER.START_RESET <= '0';
-      Ctrl.MASTER.START_CONNECT <= '0';
-      Ctrl.MASTER.START_COMMAND <= '0';
-      Ctrl.MASTER.INJ_CRC_ERR <= '0';
-      Ctrl.SLAVE.TX_RESET <= '0';
-      Ctrl.SLAVE.RX_RESET <= '0';
-      Ctrl.SLAVE.TX_WR <= '0';
-      Ctrl.SLAVE.RX_RD <= '0';
-      
-
-      
-      if localWrEn = '1' then
-        case to_integer(unsigned(localAddress(5 downto 0))) is
+      -- Write on strobe=write=1
+      if wb_strobe='1' and wb_write = '1' then
+        case to_integer(unsigned(wb_addr(5 downto 0))) is
         when 0 => --0x0
           Ctrl.MASTER.TX_RESET        <=  localWrData( 0);               
         when 1 => --0x1
@@ -263,10 +211,62 @@ begin  -- architecture behavioral
         when 36 => --0x24
           reg_data(36)(31 downto 16)  <=  localWrData(31 downto 16);      --Number of words/bytes to be read (only for read transactions)
 
-          when others => null;
+        when others => null;
+
         end case;
-      end if;
-    end if;
+      end if; -- write
+
+      -- synchronous reset (active high)
+      if reset = '1' then
+      reg_data( 2)( 0)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_START_WRITE;
+      reg_data( 2)( 1)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_START_READ;
+      reg_data(21)( 2 downto  0)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.SCA_ENABLE;
+      reg_data( 5)( 7 downto  0)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_DATA_TO_GBTX;
+      reg_data( 9)( 7 downto  0)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_CMD;
+      reg_data( 2)(15 downto  8)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_GBTX_ADDR;
+      reg_data( 9)(15 downto  8)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_ADDRESS;
+      reg_data( 9)(23 downto 16)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_TRANSID;
+      reg_data( 9)(31 downto 24)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_CHANNEL;
+      reg_data( 3)(31 downto 16)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_REGISTER_ADDR;
+      reg_data( 4)(31 downto 16)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_NUM_BYTES_TO_READ;
+      reg_data(10)(31 downto  0)  <= DEFAULT_GBT_SC_CTRL_t.MASTER.TX_DATA;
+      reg_data(34)( 0)  <= DEFAULT_GBT_SC_CTRL_t.SLAVE.TX_START_WRITE;
+      reg_data(34)( 1)  <= DEFAULT_GBT_SC_CTRL_t.SLAVE.TX_START_READ;
+      reg_data(37)( 7 downto  0)  <= DEFAULT_GBT_SC_CTRL_t.SLAVE.TX_DATA_TO_GBTX;
+      reg_data(34)(15 downto  8)  <= DEFAULT_GBT_SC_CTRL_t.SLAVE.TX_GBTX_ADDR;
+      reg_data(35)(31 downto 16)  <= DEFAULT_GBT_SC_CTRL_t.SLAVE.TX_REGISTER_ADDR;
+      reg_data(36)(31 downto 16)  <= DEFAULT_GBT_SC_CTRL_t.SLAVE.TX_NUM_BYTES_TO_READ;
+
+      Ctrl.MASTER.TX_RESET <= '0';
+      Ctrl.MASTER.RX_RESET <= '0';
+      Ctrl.MASTER.TX_WR <= '0';
+      Ctrl.MASTER.RX_RD <= '0';
+      Ctrl.MASTER.START_RESET <= '0';
+      Ctrl.MASTER.START_CONNECT <= '0';
+      Ctrl.MASTER.START_COMMAND <= '0';
+      Ctrl.MASTER.INJ_CRC_ERR <= '0';
+      Ctrl.SLAVE.TX_RESET <= '0';
+      Ctrl.SLAVE.RX_RESET <= '0';
+      Ctrl.SLAVE.TX_WR <= '0';
+      Ctrl.SLAVE.RX_RD <= '0';
+      
+
+      Ctrl.MASTER.TX_RESET <= '0';
+      Ctrl.MASTER.RX_RESET <= '0';
+      Ctrl.MASTER.TX_WR <= '0';
+      Ctrl.MASTER.RX_RD <= '0';
+      Ctrl.MASTER.START_RESET <= '0';
+      Ctrl.MASTER.START_CONNECT <= '0';
+      Ctrl.MASTER.START_COMMAND <= '0';
+      Ctrl.MASTER.INJ_CRC_ERR <= '0';
+      Ctrl.SLAVE.TX_RESET <= '0';
+      Ctrl.SLAVE.RX_RESET <= '0';
+      Ctrl.SLAVE.TX_WR <= '0';
+      Ctrl.SLAVE.RX_RD <= '0';
+      
+
+      end if; -- reset
+    end if; -- clk
   end process reg_writes;
 
 
