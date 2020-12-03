@@ -16,16 +16,22 @@ else
 TIMECMD = time -p
 endif
 
+export LD_LIBRARY_PATH=/opt/cactus/lib
+
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
 
 all: create synth impl
 
 init:
-	git submodule update --init
+	git submodule update --init --recursive
 
-reg:
+reg: decode
 	cd regmap && make
+
+decode:
+	/opt/cactus/bin/uhal/tools/gen_ipbus_addr_decode address_tables/etl_test_fw.xml
+	mv ipbus_decode_etl_test_fw.vhd registers/
 
 create:
 	$(TIMECMD) Hog/CreateProject.sh etl_test_fw $(COLORIZE)
@@ -38,3 +44,4 @@ impl:
 
 clean:
 	rm -rf VivadoProject/
+	cd regmap && make clean_regmap

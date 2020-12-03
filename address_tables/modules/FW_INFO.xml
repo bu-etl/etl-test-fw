@@ -1,24 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<node id="INFO">
-
-  <node id="FW_INFO" address="0x00000000">
-    <node id="GIT_VALID"  address="0x0" permission="r" mask="0x2"        parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-    <node id="GIT_HASH_1" address="0x1" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-    <node id="GIT_HASH_2" address="0x2" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-    <node id="GIT_HASH_3" address="0x3" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-    <node id="GIT_HASH_4" address="0x4" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-    <node id="GIT_HASH_5" address="0x5" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-    <node id="BUILD_DATE" address="0x10" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=1">
-      <node id="YEAR" permission="r" mask="0xFFFF0000"/>
-      <node id="MONTH" permission="r"  mask="0xFF00"/>
-      <node id="DAY" permission="r"  mask="0xFF"/>
-    </node>
-    <node id="BUILD_TIME" address="0x11" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=1">
-      <node id="SEC" permission="r"  mask="0xFF"/>
-      <node id="MIN" permission="r"  mask="0xFF00"/>
-      <node id="HOUR" permission="r"  mask="0xFF0000"/>
-    </node>
-  </node>
+<node id="INFO" fwinfo="endpoint; width=8">
 
   <node id="HOG_INFO" address="0x00000020">
       <node id="GLOBAL_FWDATE"       address="0x0"  permission="r" mask="0xFFFFFFFF"/>
@@ -33,40 +14,6 @@
       <node id="HOG_FWHASH"          address="0x9"  permission="r" mask="0xFFFFFFFF"/>
       <node id="FRAMEWORK_FWVERSION" address="0x10" permission="r" mask="0xFFFFFFFF"/>
       <node id="FRAMEWORK_FWHASH"    address="0x11" permission="r" mask="0xFFFFFFFF"/>
-  </node>
+</node>
 
-  <node id="CONFIG" address="0x00000040">
-    <node id="MAIN_CFG_COMPILE_HW" address="0x0" permission="r" mask="0x00000001"/>
-    <node id="MAIN_CFG_COMPILE_UL" address="0x0" permission="r" mask="0x00000002"/>
-    <node id="SECTOR_SIDE"         address="0x0" permission="r" mask="0x00000004"/>
-    <node id="ST_nBARREL_ENDCAP"   address="0x0" permission="r" mask="0x00000008"/>
-    <node id="ENDCAP_nSMALL_LARGE" address="0x0" permission="r" mask="0x00000010"/>
-    <node id="ENABLE_NEIGHBORS"    address="0x0" permission="r" mask="0x00000020"/>
-    <node id="SECTOR_ID"           address="0x1" permission="r" mask="0xFFFFFFFF"/>
-    <node id="PHY_BARREL_R0"       address="0x2" permission="r" mask="0xFFFFFFFF"/>
-    <node id="PHY_BARREL_R1"       address="0x3" permission="r" mask="0xFFFFFFFF"/>
-    <node id="PHY_BARREL_R2"       address="0x4" permission="r" mask="0xFFFFFFFF"/>
-    <node id="PHY_BARREL_R3"       address="0x5" permission="r" mask="0xFFFFFFFF"/>
-    <node id="HPS_ENABLE_ST_INN"   address="0x6" permission="r" mask="0x00000001"/>
-    <node id="HPS_ENABLE_ST_EXT"   address="0x6" permission="r" mask="0x00000002"/>
-    <node id="HPS_ENABLE_ST_MID"   address="0x6" permission="r" mask="0x00000004"/>
-    <node id="HPS_ENABLE_ST_OUT"   address="0x6" permission="r" mask="0x00000008"/>
-    <node id="HPS_NUM_MDT_CH_INN"  address="0x7" permission="r" mask="0x000000FF"/>
-    <node id="HPS_NUM_MDT_CH_EXT"  address="0x7" permission="r" mask="0x0000FF00"/>
-    <node id="HPS_NUM_MDT_CH_MID"  address="0x7" permission="r" mask="0x00FF0000"/>
-    <node id="HPS_NUM_MDT_CH_OUT"  address="0x7" permission="r" mask="0xFF000000"/>
-    <node id="NUM_MTC"             address="0x8" permission="r" mask="0x000000FF"/>
-    <node id="NUM_NSP"             address="0x8" permission="r" mask="0x0000FF00"/>
-    <node id="UCM_ENABLED"         address="0x9" permission="r" mask="0x00000001"/>
-    <node id="MPL_ENABLED"         address="0x9" permission="r" mask="0x00000002"/>
-    <node id="SF_ENABLED"          address="0x9" permission="r" mask="0x00000004"/>
-    <node id="SF_TYPE"             address="0x9" permission="r" mask="0x00000008"/>
-    <node id="NUM_DAQ_STREAMS"     address="0xa" permission="r" mask="0x000000FF"/>
-    <node id="MAX_NUM_HP"          address="0xa" permission="r" mask="0x0000FF00"/>
-    <node id="MAX_NUM_HPS"         address="0xa" permission="r" mask="0x00FF0000"/>
-    <node id="NUM_SF_INPUTS"       address="0xb" permission="r" mask="0x000000FF"/>
-    <node id="NUM_SF_OUTPUTS"      address="0xb" permission="r" mask="0x0000FF00"/>
-    <node id="MAX_NUM_SL"          address="0xb" permission="r" mask="0x00FF0000"/>
-    <node id="NUM_THREADS"         address="0xb" permission="r" mask="0xFF000000"/>
-  </node>
 </node>

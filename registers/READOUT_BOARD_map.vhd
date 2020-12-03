@@ -3,8 +3,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.CSM_Ctrl.all;
-entity CSM_wb_interface is
+use work.READOUT_BOARD_Ctrl.all;
+entity READOUT_BOARD_wb_interface is
   port (
     clk         : in  std_logic;
     reset       : in  std_logic;
@@ -15,11 +15,11 @@ entity CSM_wb_interface is
     wb_rdata    : out std_logic_vector(31 downto 0);
     wb_ack      : out std_logic;
     wb_err      : out std_logic;
-    mon         : in  CSM_Mon_t;
-    ctrl        : out CSM_Ctrl_t
+    mon         : in  READOUT_BOARD_Mon_t;
+    ctrl        : out READOUT_BOARD_Ctrl_t
     );
-end entity CSM_wb_interface;
-architecture behavioral of CSM_wb_interface is
+end entity READOUT_BOARD_wb_interface;
+architecture behavioral of READOUT_BOARD_wb_interface is
   type slv32_array_t  is array (integer range <>) of std_logic_vector( 31 downto 0);
   signal localRdData : std_logic_vector (31 downto 0) := (others => '0');
   signal localWrData : std_logic_vector (31 downto 0) := (others => '0');
@@ -232,24 +232,24 @@ begin  -- architecture behavioral
 
       -- synchronous reset (active high)
       if reset = '1' then
-      reg_data(18)( 0)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_START_WRITE;
-      reg_data(18)( 1)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_START_READ;
-      reg_data(37)( 2 downto  0)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.SCA_ENABLE;
-      reg_data(21)( 7 downto  0)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_DATA_TO_GBTX;
-      reg_data(25)( 7 downto  0)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_CMD;
-      reg_data(18)(15 downto  8)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_GBTX_ADDR;
-      reg_data(25)(15 downto  8)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_ADDRESS;
-      reg_data(25)(23 downto 16)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_TRANSID;
-      reg_data(25)(31 downto 24)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_CHANNEL;
-      reg_data(19)(31 downto 16)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_REGISTER_ADDR;
-      reg_data(20)(31 downto 16)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_NUM_BYTES_TO_READ;
-      reg_data(26)(31 downto  0)  <= DEFAULT_CSM_CTRL_t.SC.MASTER.TX_DATA;
-      reg_data(50)( 0)  <= DEFAULT_CSM_CTRL_t.SC.SLAVE.TX_START_WRITE;
-      reg_data(50)( 1)  <= DEFAULT_CSM_CTRL_t.SC.SLAVE.TX_START_READ;
-      reg_data(53)( 7 downto  0)  <= DEFAULT_CSM_CTRL_t.SC.SLAVE.TX_DATA_TO_GBTX;
-      reg_data(50)(15 downto  8)  <= DEFAULT_CSM_CTRL_t.SC.SLAVE.TX_GBTX_ADDR;
-      reg_data(51)(31 downto 16)  <= DEFAULT_CSM_CTRL_t.SC.SLAVE.TX_REGISTER_ADDR;
-      reg_data(52)(31 downto 16)  <= DEFAULT_CSM_CTRL_t.SC.SLAVE.TX_NUM_BYTES_TO_READ;
+      reg_data(18)( 0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_START_WRITE;
+      reg_data(18)( 1)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_START_READ;
+      reg_data(37)( 2 downto  0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.SCA_ENABLE;
+      reg_data(21)( 7 downto  0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_DATA_TO_GBTX;
+      reg_data(25)( 7 downto  0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_CMD;
+      reg_data(18)(15 downto  8)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_GBTX_ADDR;
+      reg_data(25)(15 downto  8)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_ADDRESS;
+      reg_data(25)(23 downto 16)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_TRANSID;
+      reg_data(25)(31 downto 24)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_CHANNEL;
+      reg_data(19)(31 downto 16)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_REGISTER_ADDR;
+      reg_data(20)(31 downto 16)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_NUM_BYTES_TO_READ;
+      reg_data(26)(31 downto  0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_DATA;
+      reg_data(50)( 0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.SLAVE.TX_START_WRITE;
+      reg_data(50)( 1)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.SLAVE.TX_START_READ;
+      reg_data(53)( 7 downto  0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.SLAVE.TX_DATA_TO_GBTX;
+      reg_data(50)(15 downto  8)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.SLAVE.TX_GBTX_ADDR;
+      reg_data(51)(31 downto 16)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.SLAVE.TX_REGISTER_ADDR;
+      reg_data(52)(31 downto 16)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.SLAVE.TX_NUM_BYTES_TO_READ;
 
       Ctrl.LPGBT.UPLINK.UPLINK(0).RESET <= '0';
       Ctrl.LPGBT.UPLINK.UPLINK(1).RESET <= '0';

@@ -1,4 +1,6 @@
 # -*- mode: TCL;-*-
+registers/ipbus_decode_etl_test_fw.vhd
+
 ip/axi_bram_ctrl_0/axi_bram_ctrl_0.xci
 ip/xdma_0/xdma_0.xci
 #ipbus-firmware/components/ipbus_slaves/firmware/hdl/ipbus_peephole_ram.vhd

@@ -43,5 +43,3 @@ set DESIGN    "[file rootname [file tail [info script]]]"
 set PATH_REPO "[file normalize [file dirname [info script]]]/../../"
 
 source $PATH_REPO/Hog/Tcl/create_project.tcl
-
-source $PATH_REPO/xdc/interconnect.tcl

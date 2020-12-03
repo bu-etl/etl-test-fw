@@ -4,8 +4,8 @@ src/wrappers/lpgbt_link_wrapper.vhd
 src/wrappers/lpgbt_pkg.vhd
 src/wrappers/sc_wrapper.vhd
 src/wrappers/mgt_wrapper.vhd
-src/wrappers/interconnect_wrapper.vhd
-src/utils/wbm2axisp.v
-src/utils/skidbuffer.v
-src/utils/*.vhd
+#src/wrappers/interconnect_wrapper.vhd
+#src/utils/wbm2axisp.v
+#src/utils/skidbuffer.v
+#src/utils/*.vhd
 ip/kcu105_mgts/kcu105_mgts.xci

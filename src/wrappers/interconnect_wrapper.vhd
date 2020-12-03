@@ -3,7 +3,9 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
-entity axi_interconnect is
+library xil_defaultlib;
+
+entity interconnect is
   generic(
     ----- Start : Generics
      NUM_MASTERS : natural := 1;
@@ -32,14 +34,14 @@ entity axi_interconnect is
     axi_write_miso : axiwritemiso_array_t (NUM_SLAVES - 1 downto 0)
 
     );
-end axi_interconnect;
+end interconnect;
 
-architecture behavioral of axi_interconnect is
+architecture behavioral of interconnect is
 
 begin
 
 
-  axi_interconnect_wrapper_1 : entity work.axi_interconnect_wrapper
+  axi_interconnect_wrapper_1 : entity xil_defaultlib.axi_interconnect_wrapper
     port map (
 
       ----- Start : Masters

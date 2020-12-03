@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<node id="READOUT_BOARD">
+<node id="READOUT_BOARD" fwinfo="endpoint; width=10">
 
   <!-- LPGBT-FPGA  -->
   <node id="LPGBT" address="0x0">

@@ -12,6 +12,7 @@ use ipbus.ipbus.all;
 
 entity etl_test_fw is
   generic(
+    NSLAVES        : integer := 1;
     SCAS_PER_LPGBT : integer := 1;
     NUM_SIMPLEX    : integer := 0;
     NUM_EMUL       : integer := 1;
@@ -60,9 +61,6 @@ architecture behavioral of etl_test_fw is
   signal ipb_out : ipb_wbus;
   signal ipb_in  : ipb_rbus;
 
-  signal ipb_w_array : ipb_wbus_array(N_SLAVES - 1 downto 0);
-  signal ipb_r_array : ipb_rbus_array(N_SLAVES - 1 downto 0);
-
 begin
 
   nuke     <= '0';
@@ -90,24 +88,11 @@ begin
       ipb_rst        => ipb_rst,
       nuke           => nuke,
       soft_rst       => soft_rst,
-      leds           => leds(1 downto 0),
+      -- leds           => leds(1 downto 0),
       ipb_in         => ipb_in,
       ipb_out        => ipb_out
       );
 
-  -- ipbus fabric selector
-
-  fabric : entity ipbus.ipbus_fabric_sel
-    generic map(
-      NSLV      => N_SLAVES,
-      SEL_WIDTH => IPBUS_SEL_WIDTH)
-    port map(
-      ipb_in          => ipb_w,
-      ipb_out         => ipb_r,
-      sel             => ipbus_sel_top_emp_slim(ipb_w.ipb_addr),
-      ipb_to_slaves   => ipb_w_array,
-      ipb_from_slaves => ipb_r_array
-      );
 
   readout_board_1 : entity work.readout_board
     generic map (
@@ -161,5 +146,4 @@ begin
       rxpmaresetdone_out                 => rxpmaresetdone_out,
       txpmaresetdone_out                 => txpmaresetdone_out
       );
-
 end behavioral;

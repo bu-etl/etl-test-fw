@@ -1,8 +1,10 @@
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
+
+library ctrl_lib;
+use ctrl_lib.all;
 
 entity readout_board is
   generic(
@@ -41,15 +43,15 @@ architecture behavioral of readout_board is
   -- LPGBT Glue
   --------------------------------------------------------------------------------
 
-  signal trig_uplink_data  : lpgbt_uplink_data_rt_array (NUM_LPGBTS_TRIG-1 downto 0);
-  signal trig_uplink_reset : std_logic_vector (NUM_LPGBTS_TRIG-1 downto 0);
-  signal trig_uplink_ready : std_logic_vector (NUM_LPGBTS_TRIG-1 downto 0);
+  signal trig_uplink_data    : lpgbt_uplink_data_rt_array (NUM_LPGBTS_TRIG-1 downto 0);
+  signal trig_uplink_reset   : std_logic_vector (NUM_LPGBTS_TRIG-1 downto 0);
+  signal trig_uplink_ready   : std_logic_vector (NUM_LPGBTS_TRIG-1 downto 0);
   signal trig_uplink_bitslip : std_logic_vector (NUM_LPGBTS_TRIG-1 downto 0);
   signal trig_uplink_fec_err : std_logic_vector (NUM_LPGBTS_TRIG-1 downto 0);
 
-  signal daq_uplink_data  : lpgbt_uplink_data_rt_array (NUM_LPGBTS_DAQ-1 downto 0);
-  signal daq_uplink_reset : std_logic_vector (NUM_LPGBTS_DAQ-1 downto 0);
-  signal daq_uplink_ready : std_logic_vector (NUM_LPGBTS_DAQ-1 downto 0);
+  signal daq_uplink_data    : lpgbt_uplink_data_rt_array (NUM_LPGBTS_DAQ-1 downto 0);
+  signal daq_uplink_reset   : std_logic_vector (NUM_LPGBTS_DAQ-1 downto 0);
+  signal daq_uplink_ready   : std_logic_vector (NUM_LPGBTS_DAQ-1 downto 0);
   signal daq_uplink_bitslip : std_logic_vector (NUM_LPGBTS_DAQ-1 downto 0);
   signal daq_uplink_fec_err : std_logic_vector (NUM_LPGBTS_DAQ-1 downto 0);
 
@@ -57,10 +59,10 @@ architecture behavioral of readout_board is
   signal downlink_reset : std_logic_vector (NUM_DOWNLINKS-1 downto 0);
   signal downlink_ready : std_logic_vector (NUM_DOWNLINKS-1 downto 0);
 
-  attribute MARK_DEBUG : string;
-  attribute MARK_DEBUG of trig_uplink_data: signal is "TRUE";
-  attribute MARK_DEBUG of daq_uplink_data: signal is "TRUE";
-  attribute MARK_DEBUG of downlink_data : signal is "TRUE";
+  attribute MARK_DEBUG                     : string;
+  attribute MARK_DEBUG of trig_uplink_data : signal is "TRUE";
+  attribute MARK_DEBUG of daq_uplink_data  : signal is "TRUE";
+  attribute MARK_DEBUG of downlink_data    : signal is "TRUE";
 
 begin
 
@@ -90,12 +92,12 @@ begin
 
   daq_lpgbt_link_wrapper : entity work.lpgbt_link_wrapper
     generic map (
-      g_UPLINK_FEC                        => FEC5,
-      g_NUM_DOWNLINKS                     => NUM_DOWNLINKS,
-      g_NUM_UPLINKS                       => NUM_LPGBTS_DAQ,
-      g_PIPELINE_BITSLIP                  => true,
-      g_PIPELINE_LPGBT                    => true,
-      g_PIPELINE_MGT                      => true
+      g_UPLINK_FEC       => FEC5,
+      g_NUM_DOWNLINKS    => NUM_DOWNLINKS,
+      g_NUM_UPLINKS      => NUM_LPGBTS_DAQ,
+      g_PIPELINE_BITSLIP => true,
+      g_PIPELINE_LPGBT   => true,
+      g_PIPELINE_MGT     => true
       )
     port map (
       reset => reset,
@@ -106,10 +108,10 @@ begin
       downlink_reset_i => reset,
       uplink_reset_i   => reset,
 
-      downlink_data_i =>daq_downlink_data,
+      downlink_data_i => daq_downlink_data,
       uplink_data_o   => daq_uplink_data,
 
-      downlink_mgt_word_array_o =>  daq_downlink_mgt_word_array,
+      downlink_mgt_word_array_o => daq_downlink_mgt_word_array,
       uplink_mgt_word_array_i   => daq_uplink_mgt_word_array,
 
       downlink_ready_o => daq_downlink_ready,
@@ -121,12 +123,12 @@ begin
 
   trig_lpgbt_link_wrapper : entity work.lpgbt_link_wrapper
     generic map (
-      g_UPLINK_FEC                        => FEC5,
-      g_NUM_DOWNLINKS                     => 0,
-      g_NUM_UPLINKS                       => NUM_LPGBTS_TRIG,
-      g_PIPELINE_BITSLIP                  => true,
-      g_PIPELINE_LPGBT                    => true,
-      g_PIPELINE_MGT                      => true
+      g_UPLINK_FEC       => FEC5,
+      g_NUM_DOWNLINKS    => 0,
+      g_NUM_UPLINKS      => NUM_LPGBTS_TRIG,
+      g_PIPELINE_BITSLIP => true,
+      g_PIPELINE_LPGBT   => true,
+      g_PIPELINE_MGT     => true
       )
     port map (
       reset => reset,
@@ -137,7 +139,7 @@ begin
       downlink_reset_i => reset,
       uplink_reset_i   => reset,
 
-      downlink_data_i => (others =>  lpgbt_downlink_data_rt_zero),
+      downlink_data_i => (others => lpgbt_downlink_data_rt_zero),
       uplink_data_o   => trig_uplink_data,
 
       downlink_mgt_word_array_o => open,
