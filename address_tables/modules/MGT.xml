@@ -1,41 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<node id="MGT">
+<node id="MGT" fwinfo="endpoint; width=8">
+  <node id="userclk_tx_reset_in"            address="0x0" mask="0x1" permission="rw" description=""/>
+  <node id="userclk_rx_reset_in"            address="0x0" mask="0x2" permission="rw" description=""/>
 
-  <node id="STATUS" address="0x0">
-    <node id ="rxcdr_stable"            address="0x0" mask="0x00000001" permission = "r" description=""/>
-    <node id ="powergood"               address="0x0" mask="0x00000002" permission = "r" description=""/>
-    <node id ="txready"                 address="0x0" mask="0x00000004" permission = "r" description=""/>
-    <node id ="rxready"                 address="0x0" mask="0x00000008" permission = "r" description=""/>
-    <node id ="rx_pma_reset_done"       address="0x0" mask="0x00000010" permission = "r" description=""/>
-    <node id ="tx_pma_reset_done"       address="0x0" mask="0x00000020" permission = "r" description=""/>
-    <node id ="tx_reset_done"           address="0x0" mask="0x00000040" permission = "r" description=""/>
-    <node id ="rx_reset_done"           address="0x0" mask="0x00000080" permission = "r" description=""/>
-    <node id ="buffbypass_tx_done_out"  address="0x0" mask="0x00000100" permission = "r" description=""/>
-    <node id ="buffbypass_tx_error_out" address="0x0" mask="0x00000200" permission = "r" description=""/>
-    <node id ="buffbypass_rx_done_out"  address="0x0" mask="0x00000400" permission = "r" description=""/>
-    <node id ="buffbypass_rx_error_out" address="0x0" mask="0x00000800" permission = "r" description=""/>
+  <node id="reset_clk_freerun_in"           address="0x0" mask="0x4" permission="rw" description=""/>
+  <node id="reset_all_in"                   address="0x0" mask="0x8" permission="rw" description=""/>
+  <node id="reset_tx_pll_and_datapath_in"   address="0x0" mask="0x10" permission="rw" description=""/>
+  <node id="reset_tx_datapath_in"           address="0x0" mask="0x20" permission="rw" description=""/>
+  <node id="reset_rx_pll_and_datapath_in"   address="0x0" mask="0x40" permission="rw" description=""/>
+  <node id="reset_rx_datapath_in"           address="0x0" mask="0x80" permission="rw" description=""/>
+
+  <node id="STATUS" address="0x1">
+    <node id ="userclk_tx_active_out"   address="0x0" mask="0x00000002" permission = "r" description=""/>
+    <node id ="userclk_rx_active_out"   address="0x0" mask="0x00000004" permission = "r" description=""/>
+    <node id ="reset_rx_cdr_stable_out" address="0x0" mask="0x00000008" permission = "r" description=""/>
+    <node id ="reset_tx_done_out"       address="0x0" mask="0x00000010" permission = "r" description=""/>
+    <node id ="reset_rx_done_out"       address="0x0" mask="0x00000020" permission = "r" description=""/>
+
+    <node id ="rxpmaresetdone_out"    address="0x1" mask="0x000003ff" permission = "r" description=""/>
+    <node id ="txpmaresetdone_out"    address="0x1" mask="0x000ffc00" permission = "r" description=""/>
+    <node id ="gtpowergood_out"       address="0x1" mask="0x3ff00000" permission = "r" description=""/>
   </node>
 
-  <node id="DRP" address="0x1">
-    <node id="wr_en"   address="0x0" mask="0x00000001" permission="w" description="DRP Write Enable"/>
-    <node id="wr_addr" address="0x1" mask="0x000003FF" permission="rw" description="DRP Address"/>
-    <node id="en"      address="0x1" mask="0x00001000" permission="rw" description="DRP Enable"/>
-    <node id="rd_rdy"  address="0x1" mask="0x00002000" permission="r" description="DRP Enable"/>
-    <node id="wr_data" address="0x2" mask="0xffff0000" permission="rw" description="DRP Write Data"/>
-    <node id="rd_data" address="0x2" mask="0x0000ffff" permission="r" description="DRP Read Data"/>
+  <node id="DRP" address="0x3">
+    <node id="DRP_0" address="0x00" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_1" address="0x05" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_2" address="0x0A" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_3" address="0x0F" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_4" address="0x14" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_5" address="0x19" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_6" address="0x1E" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_7" address="0x23" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_8" address="0x28" fwinfo="type=array" module="file://DRP.xml"/>
+    <node id="DRP_9" address="0x2D" fwinfo="type=array" module="file://DRP.xml"/>
   </node>
 
-  <node id="TX_RESETS" address="0x4">
-    <node id ="reset"                  address="0x0" mask="0x00000001" permission = "rw" description=""/>
-    <node id ="reset_pll_and_datapath" address="0x0" mask="0x00000002" permission = "rw" description=""/>
-    <node id ="reset_datapath"         address="0x0" mask="0x00000004" permission = "rw" description=""/>
-    <node id ="reset_bufbypass"        address="0x0" mask="0x00000008" permission = "rw" description=""/>
-  </node>
-
-  <node id="RX_RESETS" address="0x5">
-    <node id ="reset"                  address="0x0" mask="0x00000001" permission = "rw" description=""/>
-    <node id ="reset_pll_and_datapath" address="0x0" mask="0x00000002" permission = "rw" description=""/>
-    <node id ="reset_datapath"         address="0x0" mask="0x00000004" permission = "rw" description=""/>
-    <node id ="reset_bufbypass"        address="0x0" mask="0x00000008" permission = "rw" description=""/>
-  </node>
 </node>

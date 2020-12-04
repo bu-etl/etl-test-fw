@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <node id="TOP">
-  <node id="FW_INFO" module="file://modules/FW_INFO.xml" address="0x0" parameters="width=0xFFFF"/>
+  <node id="FW_INFO" module="file://modules/FW_INFO.xml" address="0x0" />
   <node id="READOUT_BOARD_0" module="file://modules/READOUT_BOARD.xml" address="0x1000"/>
   <node id="READOUT_BOARD_1" module="file://modules/READOUT_BOARD.xml" address="0x2000"/>
   <node id="READOUT_BOARD_2" module="file://modules/READOUT_BOARD.xml" address="0x3000"/>
@@ -9,4 +9,5 @@
   <node id="READOUT_BOARD_5" module="file://modules/READOUT_BOARD.xml" address="0x6000"/>
   <node id="READOUT_BOARD_6" module="file://modules/READOUT_BOARD.xml" address="0x7000"/>
   <node id="READOUT_BOARD_7" module="file://modules/READOUT_BOARD.xml" address="0x8000"/>
+  <node id="MGT" module="file://modules/MGT.xml" address="0x9000"/>
 </node>

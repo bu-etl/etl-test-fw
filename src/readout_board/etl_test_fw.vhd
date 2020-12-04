@@ -1,6 +1,10 @@
+library unisim;
+use unisim.vcomponents.all;
+
 library ctrl_lib;
 use ctrl_lib.READOUT_BOARD_Ctrl.all;
 use ctrl_lib.FW_INFO_Ctrl.all;
+use ctrl_lib.MGT_Ctrl.all;
 
 library work;
 use work.types.all;
@@ -12,10 +16,10 @@ use ieee.numeric_std.all;
 
 library ipbus;
 use ipbus.ipbus.all;
+use ipbus.ipbus_decode_etl_test_fw.all;
 
 entity etl_test_fw is
   generic(
-    NSLAVES        : integer := 1;
     SCAS_PER_LPGBT : integer := 1;
     NUM_SIMPLEX    : integer := 0;
     NUM_EMUL       : integer := 1;
@@ -24,6 +28,7 @@ entity etl_test_fw is
     NUM_TX         : integer := 2;
     NUM_RX         : integer := 2;
 
+    NUM_GTS         : integer := 10;
     NUM_LPGBTS_DAQ  : integer := 1;
     NUM_LPGBTS_TRIG : integer := 1;
     NUM_SCAS        : integer := 1;
@@ -51,10 +56,11 @@ entity etl_test_fw is
     -- Transceiver ref-clocks
     refclkp : in  std_logic_vector(NUM_REFCLK - 1 downto 0);
     refclkn : in  std_logic_vector(NUM_REFCLK - 1 downto 0);
-    txp     : out std_logic_vector(NUM_TX - 1 downto 0);
-    txn     : out std_logic_vector(NUM_TX - 1 downto 0);
-    rxp     : in  std_logic_vector(NUM_RX - 1 downto 0);
-    rxn     : in  std_logic_vector(NUM_RX - 1 downto 0);
+
+    txp     : out std_logic_vector(NUM_GTS - 1 downto 0);
+    txn     : out std_logic_vector(NUM_GTS - 1 downto 0);
+    rxp     : in  std_logic_vector(NUM_GTS - 1 downto 0);
+    rxn     : in  std_logic_vector(NUM_GTS - 1 downto 0);
 
     -- status LEDs
     leds : out std_logic_vector(7 downto 0)
@@ -64,14 +70,12 @@ end etl_test_fw;
 
 architecture behavioral of etl_test_fw is
 
+  signal mgt_data_in  : std32_array_t (NUM_GTS-1 downto 0) := (others => (others => '0'));
+  signal mgt_data_out : std32_array_t (NUM_GTS-1 downto 0);
+
   signal trig_uplink_mgt_word_array : std32_array_t (NUM_RBS*NUM_LPGBTS_TRIG-1 downto 0);
   signal daq_uplink_mgt_word_array  : std32_array_t (NUM_RBS*NUM_LPGBTS_DAQ-1 downto 0);
   signal downlink_mgt_word_array    : std32_array_t (NUM_RBS*NUM_DOWNLINKS-1 downto 0);
-
-  signal readout_board_mon  : READOUT_BOARD_Mon_array_t (NUM_RBS-1 downto 0);
-  signal readout_board_ctrl : READOUT_BOARD_Ctrl_array_t (NUM_RBS-1 downto 0);
-
-  signal fw_info_mon  : FW_INFO_Mon_t;
 
   signal clk40, clk320 : std_logic := '0';
   signal reset         : std_logic := '0';
@@ -81,39 +85,18 @@ architecture behavioral of etl_test_fw is
   signal pcie_sys_rst_n   : std_logic;
 
   signal ipb_w : ipb_wbus;
-  signal ipb_r  : ipb_rbus;
+  signal ipb_r : ipb_rbus;
 
-  signal gtwiz_userclk_tx_reset_in          : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_tx_srcclk_out        : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_tx_usrclk_out        : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_tx_usrclk2_out       : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_tx_active_out        : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_rx_reset_in          : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_rx_srcclk_out        : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_rx_usrclk_out        : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_rx_usrclk2_out       : std_logic_vector(0 downto 0);
-  signal gtwiz_userclk_rx_active_out        : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_clk_freerun_in         : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_all_in                 : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_tx_pll_and_datapath_in : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_tx_datapath_in         : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_rx_pll_and_datapath_in : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_rx_datapath_in         : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_rx_cdr_stable_out      : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_tx_done_out            : std_logic_vector(0 downto 0);
-  signal gtwiz_reset_rx_done_out            : std_logic_vector(0 downto 0);
-  signal gtwiz_userdata_tx_in               : std_logic_vector(319 downto 0);
-  signal gtwiz_userdata_rx_out              : std_logic_vector(319 downto 0);
-  signal gtrefclk00_in                      : std_logic_vector(2 downto 0);
-  signal qpll0outclk_out                    : std_logic_vector(2 downto 0);
-  signal qpll0outrefclk_out                 : std_logic_vector(2 downto 0);
-  signal gthrxn_in                          : std_logic_vector(9 downto 0);
-  signal gthrxp_in                          : std_logic_vector(9 downto 0);
-  signal gthtxn_out                         : std_logic_vector(9 downto 0);
-  signal gthtxp_out                         : std_logic_vector(9 downto 0);
-  signal gtpowergood_out                    : std_logic_vector(9 downto 0);
-  signal rxpmaresetdone_out                 : std_logic_vector(9 downto 0);
-  signal txpmaresetdone_out                 : std_logic_vector(9 downto 0);
+  signal refclk : std_logic_vector (NUM_REFCLK-1 downto 0);
+
+  -- control and monitoring
+  signal readout_board_mon  : READOUT_BOARD_Mon_array_t (NUM_RBS-1 downto 0);
+  signal readout_board_ctrl : READOUT_BOARD_Ctrl_array_t (NUM_RBS-1 downto 0);
+
+  signal mgt_mon  : MGT_Mon_t;
+  signal mgt_ctrl : MGT_Ctrl_t;
+
+  signal fw_info_mon : FW_INFO_Mon_t;
 
 begin
 
@@ -181,43 +164,50 @@ begin
       fw_info_mon        => fw_info_mon,
       readout_board_mon  => readout_board_mon,
       readout_board_ctrl => readout_board_ctrl,
+      mgt_mon            => mgt_mon,
+      mgt_ctrl           => mgt_ctrl,
       ipb_w              => ipb_w,
       ipb_r              => ipb_r
       );
 
 
+  refclkgen_inst : for I in 0 to NUM_REFCLK-1 generate
+  begin
+    refclk_ibufds : ibufds_gte4
+      generic map(
+        REFCLK_EN_TX_PATH  => '0',
+        REFCLK_HROW_CK_SEL => (others => '0'),
+        REFCLK_ICNTL_RX    => (others => '0')
+        )
+      port map (
+        O     => refclk(I),
+        ODIV2 => open,
+        CEB   => '0',
+        I     => refclkp(I),
+        IB    => refclkn(I)
+        );
+
+  end generate;
+
   mgt_wrapper_inst : entity work.mgt_wrapper
+    generic map (
+      NUM_GTS => NUM_GTS
+      )
     port map (
-      gtwiz_userclk_tx_reset_in          => gtwiz_userclk_tx_reset_in,
-      gtwiz_userclk_tx_srcclk_out        => gtwiz_userclk_tx_srcclk_out,
-      gtwiz_userclk_tx_usrclk_out        => gtwiz_userclk_tx_usrclk_out,
-      gtwiz_userclk_tx_usrclk2_out       => gtwiz_userclk_tx_usrclk2_out,
-      gtwiz_userclk_tx_active_out        => gtwiz_userclk_tx_active_out,
-      gtwiz_userclk_rx_reset_in          => gtwiz_userclk_rx_reset_in,
-      gtwiz_userclk_rx_srcclk_out        => gtwiz_userclk_rx_srcclk_out,
-      gtwiz_userclk_rx_usrclk_out        => gtwiz_userclk_rx_usrclk_out,
-      gtwiz_userclk_rx_usrclk2_out       => gtwiz_userclk_rx_usrclk2_out,
-      gtwiz_userclk_rx_active_out        => gtwiz_userclk_rx_active_out,
-      gtwiz_reset_clk_freerun_in         => gtwiz_reset_clk_freerun_in,
-      gtwiz_reset_all_in                 => gtwiz_reset_all_in,
-      gtwiz_reset_tx_pll_and_datapath_in => gtwiz_reset_tx_pll_and_datapath_in,
-      gtwiz_reset_tx_datapath_in         => gtwiz_reset_tx_datapath_in,
-      gtwiz_reset_rx_pll_and_datapath_in => gtwiz_reset_rx_pll_and_datapath_in,
-      gtwiz_reset_rx_datapath_in         => gtwiz_reset_rx_datapath_in,
-      gtwiz_reset_rx_cdr_stable_out      => gtwiz_reset_rx_cdr_stable_out,
-      gtwiz_reset_tx_done_out            => gtwiz_reset_tx_done_out,
-      gtwiz_reset_rx_done_out            => gtwiz_reset_rx_done_out,
-      gtwiz_userdata_tx_in               => gtwiz_userdata_tx_in,
-      gtwiz_userdata_rx_out              => gtwiz_userdata_rx_out,
-      gtrefclk00_in                      => gtrefclk00_in,
-      qpll0outclk_out                    => qpll0outclk_out,
-      qpll0outrefclk_out                 => qpll0outrefclk_out,
-      gthrxn_in                          => gthrxn_in,
-      gthrxp_in                          => gthrxp_in,
-      gthtxn_out                         => gthtxn_out,
-      gthtxp_out                         => gthtxp_out,
-      gtpowergood_out                    => gtpowergood_out,
-      rxpmaresetdone_out                 => rxpmaresetdone_out,
-      txpmaresetdone_out                 => txpmaresetdone_out
+      drp_clk => clk40,
+      rxp_in  => rxp,
+      rxn_in  => rxn,
+
+      txp_out => txp,
+      txn_out => txn,
+
+      data_in  => mgt_data_in,
+      data_out => mgt_data_out,
+
+      gtrefclk00_in => (others => refclk(0)),
+
+      mon  => mgt_mon,
+      ctrl => mgt_ctrl
+
       );
 end behavioral;

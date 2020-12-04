@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<node id="DRP" address="0x0">
+  <node id="wr_en"   address="0x0" mask="0x00000001" permission="w"  description="DRP Write Enable"/>
+  <node id="wr_addr" address="0x1" mask="0x000001FF" permission="rw" description="DRP Address"/>
+  <node id="en"      address="0x1" mask="0x00001000" permission="rw" description="DRP Enable"/>
+  <node id="rd_rdy"  address="0x1" mask="0x00002000" permission="r"  description="DRP Enable"/>
+  <node id="wr_data" address="0x2" mask="0xffff0000" permission="rw" description="DRP Write Data"/>
+  <node id="rd_data" address="0x2" mask="0x0000ffff" permission="r"  description="DRP Read Data"/>
+</node>

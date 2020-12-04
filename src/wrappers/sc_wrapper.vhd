@@ -56,6 +56,8 @@ architecture common_controller of gbt_controller_wrapper is
 
   signal tx_reset, rx_reset : std_logic := '0';  -- TODO: connect to AXI
 
+  signal valid : std_logic := '1';
+
 begin
 
   process (clk) is
