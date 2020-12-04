@@ -6,9 +6,9 @@ use ieee.numeric_std.all;
 library lpgbt_fpga;
 use lpgbt_fpga.lpgbtfpga_package.all;
 
-library hal;
-use hal.lpgbt_pkg.all;
-use hal.system_types_pkg.all;
+library work;
+use work.types.all;
+use work.lpgbt_pkg.all;
 
 entity lpgbt_link_wrapper is
   generic (
@@ -154,31 +154,19 @@ begin
     -- (fixed some timing issues)
     --------------------------------------------------------------------------------
 
-    lpgbtlatch : if (g_PIPELINE_LPGBT) generate
-      downlink_data_pipe : process (downlink_clk) is
-      begin  -- process downlink_data_pipe
-        if downlink_clk'event and downlink_clk = '1' then  -- rising clock edge
-          downlink_data <= downlink_data_i(I);
-        end if;
-      end process downlink_data_pipe;
-    end generate;
+    downlink_data_pipe : process (downlink_clk, downlink_data_i) is
+    begin
+      if rising_edge(downlink_clk) or (not g_PIPELINE_LPGBT) then
+        downlink_data <= downlink_data_i(I);
+      end if;
+    end process;
 
-    lpgbtnolatch : if (not g_PIPELINE_LPGBT) generate
-      downlink_data <= downlink_data_i(I);
-    end generate;
-
-    mgtlatch : if (g_PIPELINE_MGT) generate
-      downlink_data_pipe : process (downlink_clk) is
-      begin  -- process downlink_data_pipe
-        if downlink_clk'event and downlink_clk = '1' then  -- rising clock edge
-          downlink_mgt_word_array_o(I) <= mgt_data;
-        end if;
-      end process downlink_data_pipe;
-    end generate;
-
-    mgtnolatch : if (not g_PIPELINE_MGT) generate
-      downlink_mgt_word_array_o(I) <= mgt_data;
-    end generate;
+    downlink_mgt_pipe : process (downlink_clk, mgt_data) is
+    begin
+      if rising_edge(downlink_clk) or (not g_PIPELINE_MGT) then
+        downlink_mgt_word_array_o(I) <= mgt_data;
+      end if;
+    end process;
 
   end generate;
 
@@ -225,11 +213,9 @@ begin
         )
 
       port map (
-        clk_freerunningclk_i       => std_logic0,  -- not used since reset on even feature is
-                                                   -- disabled in frame aligner
         uplinkclk_i                => uplink_clk,
         uplinkrst_n_i              => uplink_reset,
-        mgt_word_o                 => mgt_data,
+        mgt_word_i                 => mgt_data,
         bypassinterleaver_i        => g_LPGBT_BYPASS_INTERLEAVER,
         bypassfecencoder_i         => g_LPGBT_BYPASS_FEC,
         bypassscrambler_i          => g_LPGBT_BYPASS_SCRAMBLER,
@@ -266,50 +252,31 @@ begin
       end if;
     end process;
 
-
     --------------------------------------------------------------------------------
     -- optionally pipeline some of the uplink registers
     -- (fixed some timing issues)
     --------------------------------------------------------------------------------
 
-    lpgbtlatch : if (g_PIPELINE_LPGBT) generate
-      uplink_data_pipe : process (uplink_clk) is
-      begin  -- process uplink_data_pipe
-        if uplink_clk'event and uplink_clk = '1' then  -- rising clock edge
-          uplink_data_o(I) <= uplink_data;
-        end if;
-      end process uplink_data_pipe;
-    end generate;
+    uplink_data_pipe : process (uplink_clk, uplink_data) is
+    begin
+      if rising_edge(uplink_clk) or (not g_PIPELINE_LPGBT) then
+        uplink_data_o(I) <= uplink_data;
+      end if;
+    end process;
 
-    lpgbtnolatch : if (not g_PIPELINE_LPGBT) generate
-      uplink_data_o(I) <= uplink_data;
-    end generate;
+    mgt_data_pipe : process (uplink_clk, uplink_mgt_word_array_i(I)) is
+    begin  -- process uplink_data_pipe
+      if rising_edge(uplink_clk) or (not g_PIPELINE_MGT) then
+        mgt_data <= uplink_mgt_word_array_i(I);
+      end if;
+    end process;
 
-    mgtlatch : if (g_PIPELINE_MGT) generate
-      uplink_data_pipe : process (uplink_clk) is
-      begin  -- process uplink_data_pipe
-        if uplink_clk'event and uplink_clk = '1' then  -- rising clock edge
-          mgt_data <= uplink_mgt_word_array_i(I);
-        end if;
-      end process uplink_data_pipe;
-    end generate;
-
-    mgtnolatch : if (not g_PIPELINE_MGT) generate
-      mgt_data <= uplink_mgt_word_array_i(I);
-    end generate;
-
-    bitsliplatch : if (g_PIPELINE_BITSLIP) generate
-      uplink_data_pipe : process (uplink_clk) is
-      begin  -- process uplink_data_pipe
-        if uplink_clk'event and uplink_clk = '1' then  -- rising clock edge
-          uplink_bitslip_o(I) <= bitslip;
-        end if;
-      end process uplink_data_pipe;
-    end generate;
-
-    bitslipnolatch : if (not g_PIPELINE_BITSLIP) generate
-      uplink_bitslip_o(I) <= bitslip;
-    end generate;
+    bitslip_pipe : process (uplink_clk, bitslip) is
+    begin  -- process uplink_data_pipe
+      if rising_edge(uplink_clk) or (not g_PIPELINE_BITSLIP) then
+        uplink_bitslip_o(I) <= bitslip;
+      end if;
+    end process;
 
   end generate;
 

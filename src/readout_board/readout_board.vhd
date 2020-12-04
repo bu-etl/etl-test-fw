@@ -4,28 +4,27 @@ use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
 library ctrl_lib;
-use ctrl_lib.all;
+use ctrl_lib.READOUT_BOARD_ctrl.all;
+
+library work;
+use work.types.all;
 
 entity readout_board is
   generic(
     NUM_LPGBTS_DAQ  : integer := 1;
-    NUM_LPGBTS_TRIG : integer := 0;
+    NUM_LPGBTS_TRIG : integer := 1;
     NUM_DOWNLINKS   : integer := 1;
     NUM_SCAS        : integer := 1
     );
   port(
-
-    clock : in std_logic;
 
     clk40  : in std_logic;
     clk320 : in std_logic;
 
     reset : in std_logic;
 
-    clock_ipb : in std_logic;
-
-    ipb_mosi_i : in  ipb_wbus;
-    ipb_miso_o : out ipb_rbus;
+    mon   : in  READOUT_BOARD_MON_t;
+    ctrl  : out READOUT_BOARD_CTRL_t;
 
     trig_uplink_mgt_word_array : in  std32_array_t (NUM_LPGBTS_TRIG-1 downto 0);
     daq_uplink_mgt_word_array  : in  std32_array_t (NUM_LPGBTS_DAQ-1 downto 0);
@@ -35,9 +34,6 @@ entity readout_board is
 end readout_board;
 
 architecture behavioral of readout_board is
-
-  constant NUM_UPLINKS   : integer := NUM_LPGBTS_DAQ + NUM_LPGBTS_TRIG;
-  constant NUM_DOWNLINKS : integer := 1;
 
   --------------------------------------------------------------------------------
   -- LPGBT Glue
@@ -151,6 +147,5 @@ begin
       uplink_bitslip_o => trig_uplink_bitslip,
       uplink_fec_err_o => trig_uplink_fec_err
       );
-
 
 end behavioral;
