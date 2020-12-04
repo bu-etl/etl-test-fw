@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--<node id="LINK_SEL"      address="0x1" mask="0x0ff" permission="rw" description="Selects an LPGBT link to write to"/>-->
-<!--<node id="SEL_SLAVE"     address="0x1" mask="0x100" permission="rw" description="Set to 1 to select the slave link (EC)"/>-->
-<!--<node id="BROADCAST"     address="0x1" mask="0x200" permission="rw" description="Sends data to all LPGBTs (Master + Slave)"/>-->
-
 <node id="SC">
   <node id="MASTER" address="0x0">
 
@@ -38,12 +34,10 @@
 
     <node id="RX" address="0xB">
       <node id="RX_0" address="0x0" fwinfo="type=array" module="file://SCA_RX.xml"/>
-      <node id="RX_1" address="0x3" fwinfo="type=array" module="file://SCA_RX.xml"/>
-      <node id="RX_2" address="0x6" fwinfo="type=array" module="file://SCA_RX.xml"/>
     </node>
 
     <!--SCA Control -->
-    <node id="SCA_ENABLE"     address="0x15" mask="0x7" permission="rw" parameters="default=0x7" description="Enable flag to select SCAs"/> <!--size = to # of scas-->
+    <node id="SCA_ENABLE"     address="0x15" mask="0x1" permission="rw" parameters="default=0x1" description="Enable flag to select SCAs"/> <!--size = to # of scas-->
     <node id="START_RESET"    address="0x16" mask="0x1" permission="w" description="Send a reset command to the enabled SCAs"/> <!--ACTION-->
     <node id="START_CONNECT"  address="0x17" mask="0x1" permission="w" description="Send a connect command to the enabled SCAs"/> <!--ACTION-->
     <node id="START_COMMAND"  address="0x18" mask="0x1" permission="w" description="Send the command set in input to the enabled SCAs"/> <!--ACTION-->

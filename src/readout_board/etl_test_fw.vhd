@@ -122,7 +122,7 @@ begin
   pcie_sys_rst_n <= not pcie_sys_rst;
 
   leds(3 downto 2) <= "00";
-  leds(7 downto 3) <= "0000";
+  leds(7 downto 3) <= "00000";
 
 
   -- Infrastructure

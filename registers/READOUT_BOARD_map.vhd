@@ -65,7 +65,7 @@ begin  -- architecture behavioral
           localRdData( 0)            <=  Mon.SC.MASTER.TX_READY;                      --IC core ready for a transaction
           localRdData( 1)            <=  Mon.SC.MASTER.RX_EMPTY;                      --Rx FIFO is empty (no reply from GBTx)
         when 37 => --0x25
-          localRdData( 2 downto  0)  <=  reg_data(37)( 2 downto  0);                  --Enable flag to select SCAs
+          localRdData( 0)            <=  reg_data(37)( 0);                            --Enable flag to select SCAs
         when 21 => --0x15
           localRdData( 7 downto  0)  <=  reg_data(21)( 7 downto  0);                  --Data to be written into the internal FIFO
           localRdData(15 downto  8)  <=  Mon.SC.MASTER.RX_DATA_FROM_GBTX;             --Data from the FIFO
@@ -91,28 +91,6 @@ begin  -- architecture behavioral
           localRdData(19 downto 12)  <=  Mon.SC.MASTER.RX.RX(0).RX_CHANNEL;           --Reply: The channel field specifies the destination interface of the request message (ctrl/spi/gpio/i2c/jtag/adc/dac).
         when 29 => --0x1d
           localRdData(31 downto  0)  <=  Mon.SC.MASTER.RX.RX(0).RX_DATA;              --Reply: The Data field is command dependent field whose length is defined by the length qualifier field. For example, in the case of a read/write operation on a GBT-SCA internal register, it contains the value written/read from the register.
-        when 30 => --0x1e
-          localRdData( 7 downto  0)  <=  Mon.SC.MASTER.RX.RX(1).RX_LEN;               --Reply: The length qualifier field specifies the number of bytes contained in the DATA field.
-          localRdData(15 downto  8)  <=  Mon.SC.MASTER.RX.RX(1).RX_ADDRESS;           --Reply: It represents the packet destination address. The address is one-bytelong. By default, the GBT-SCA use address 0x00.
-          localRdData(23 downto 16)  <=  Mon.SC.MASTER.RX.RX(1).RX_CONTROL;           --Reply: The control field is 1 byte in length and contains frame sequence numbers of the currently transmitted frame and the last correctly received frame. The control field is also used to convey three supervisory level commands: Connect, Reset, and Test.
-          localRdData(31 downto 24)  <=  Mon.SC.MASTER.RX.RX(1).RX_TRANSID;           --Reply: transaction ID field (According to the SCA manual)
-        when 31 => --0x1f
-          localRdData( 7 downto  0)  <=  Mon.SC.MASTER.RX.RX(1).RX_ERR;               --Reply: The Error Flag field is present in the channel reply frames to indicate error conditions encountered in the execution of a command. If no errors are found, its value is 0x00.
-          localRdData( 8)            <=  Mon.SC.MASTER.RX.RX(1).RX_RECEIVED;          --Reply received flag (pulse)
-          localRdData(19 downto 12)  <=  Mon.SC.MASTER.RX.RX(1).RX_CHANNEL;           --Reply: The channel field specifies the destination interface of the request message (ctrl/spi/gpio/i2c/jtag/adc/dac).
-        when 32 => --0x20
-          localRdData(31 downto  0)  <=  Mon.SC.MASTER.RX.RX(1).RX_DATA;              --Reply: The Data field is command dependent field whose length is defined by the length qualifier field. For example, in the case of a read/write operation on a GBT-SCA internal register, it contains the value written/read from the register.
-        when 33 => --0x21
-          localRdData( 7 downto  0)  <=  Mon.SC.MASTER.RX.RX(2).RX_LEN;               --Reply: The length qualifier field specifies the number of bytes contained in the DATA field.
-          localRdData(15 downto  8)  <=  Mon.SC.MASTER.RX.RX(2).RX_ADDRESS;           --Reply: It represents the packet destination address. The address is one-bytelong. By default, the GBT-SCA use address 0x00.
-          localRdData(23 downto 16)  <=  Mon.SC.MASTER.RX.RX(2).RX_CONTROL;           --Reply: The control field is 1 byte in length and contains frame sequence numbers of the currently transmitted frame and the last correctly received frame. The control field is also used to convey three supervisory level commands: Connect, Reset, and Test.
-          localRdData(31 downto 24)  <=  Mon.SC.MASTER.RX.RX(2).RX_TRANSID;           --Reply: transaction ID field (According to the SCA manual)
-        when 34 => --0x22
-          localRdData( 7 downto  0)  <=  Mon.SC.MASTER.RX.RX(2).RX_ERR;               --Reply: The Error Flag field is present in the channel reply frames to indicate error conditions encountered in the execution of a command. If no errors are found, its value is 0x00.
-          localRdData( 8)            <=  Mon.SC.MASTER.RX.RX(2).RX_RECEIVED;          --Reply received flag (pulse)
-          localRdData(19 downto 12)  <=  Mon.SC.MASTER.RX.RX(2).RX_CHANNEL;           --Reply: The channel field specifies the destination interface of the request message (ctrl/spi/gpio/i2c/jtag/adc/dac).
-        when 35 => --0x23
-          localRdData(31 downto  0)  <=  Mon.SC.MASTER.RX.RX(2).RX_DATA;              --Reply: The Data field is command dependent field whose length is defined by the length qualifier field. For example, in the case of a read/write operation on a GBT-SCA internal register, it contains the value written/read from the register.
         when 50 => --0x32
           localRdData( 0)            <=  reg_data(50)( 0);                            --Request a write config to the GBTx (IC)
           localRdData( 1)            <=  reg_data(50)( 1);                            --Request a read config to the GBTx (IC)
@@ -139,7 +117,7 @@ begin  -- architecture behavioral
   -- Register mapping to ctrl structures
   Ctrl.SC.MASTER.TX_START_WRITE        <=  reg_data(18)( 0);               
   Ctrl.SC.MASTER.TX_START_READ         <=  reg_data(18)( 1);               
-  Ctrl.SC.MASTER.SCA_ENABLE            <=  reg_data(37)( 2 downto  0);     
+  Ctrl.SC.MASTER.SCA_ENABLE            <=  reg_data(37)( 0);               
   Ctrl.SC.MASTER.TX_DATA_TO_GBTX       <=  reg_data(21)( 7 downto  0);     
   Ctrl.SC.MASTER.TX_CMD                <=  reg_data(25)( 7 downto  0);     
   Ctrl.SC.MASTER.TX_GBTX_ADDR          <=  reg_data(18)(15 downto  8);     
@@ -183,6 +161,8 @@ begin  -- architecture behavioral
           Ctrl.SC.MASTER.TX_WR               <=  localWrData( 0);               
         when 23 => --0x17
           Ctrl.SC.MASTER.RX_RD               <=  localWrData( 0);               
+        when 37 => --0x25
+          reg_data(37)( 0)                   <=  localWrData( 0);                --Enable flag to select SCAs
         when 38 => --0x26
           Ctrl.SC.MASTER.START_RESET         <=  localWrData( 0);               
         when 39 => --0x27
@@ -191,8 +171,6 @@ begin  -- architecture behavioral
           Ctrl.SC.MASTER.START_COMMAND       <=  localWrData( 0);               
         when 41 => --0x29
           Ctrl.SC.MASTER.INJ_CRC_ERR         <=  localWrData( 0);               
-        when 37 => --0x25
-          reg_data(37)( 2 downto  0)         <=  localWrData( 2 downto  0);      --Enable flag to select SCAs
         when 21 => --0x15
           reg_data(21)( 7 downto  0)         <=  localWrData( 7 downto  0);      --Data to be written into the internal FIFO
         when 25 => --0x19
@@ -234,7 +212,7 @@ begin  -- architecture behavioral
       if reset = '1' then
       reg_data(18)( 0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_START_WRITE;
       reg_data(18)( 1)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_START_READ;
-      reg_data(37)( 2 downto  0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.SCA_ENABLE;
+      reg_data(37)( 0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.SCA_ENABLE;
       reg_data(21)( 7 downto  0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_DATA_TO_GBTX;
       reg_data(25)( 7 downto  0)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_CMD;
       reg_data(18)(15 downto  8)  <= DEFAULT_READOUT_BOARD_CTRL_t.SC.MASTER.TX_GBTX_ADDR;

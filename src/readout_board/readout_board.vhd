@@ -3,11 +3,15 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
+library lpgbt_fpga;
+use lpgbt_fpga.lpgbtfpga_package.all;
+
 library ctrl_lib;
 use ctrl_lib.READOUT_BOARD_ctrl.all;
 
 library work;
 use work.types.all;
+use work.lpgbt_pkg.all;
 
 entity readout_board is
   generic(
@@ -23,8 +27,8 @@ entity readout_board is
 
     reset : in std_logic;
 
-    mon   : in  READOUT_BOARD_MON_t;
-    ctrl  : out READOUT_BOARD_CTRL_t;
+    mon   : out  READOUT_BOARD_MON_t;
+    ctrl  : in READOUT_BOARD_CTRL_t;
 
     trig_uplink_mgt_word_array : in  std32_array_t (NUM_LPGBTS_TRIG-1 downto 0);
     daq_uplink_mgt_word_array  : in  std32_array_t (NUM_LPGBTS_DAQ-1 downto 0);
@@ -60,6 +64,15 @@ architecture behavioral of readout_board is
   attribute MARK_DEBUG of daq_uplink_data  : signal is "TRUE";
   attribute MARK_DEBUG of downlink_data    : signal is "TRUE";
 
+  -- FIXME: connect these
+
+  -- master
+  signal ic_data_i : std_logic_vector (1 downto 0);
+  signal ic_data_o : std_logic_vector (1 downto 0);
+
+  signal sca0_data_i : std_logic_vector (1 downto 0);
+  signal sca0_data_o : std_logic_vector (1 downto 0);
+
 begin
 
   gbt_controller_wrapper_inst : entity work.gbt_controller_wrapper
@@ -69,24 +82,21 @@ begin
       )
     port map (
       reset_i     => reset,
-      mon         => mon,
-      ctrl        => ctrl,
+      mon         => mon.sc,
+      ctrl        => ctrl.sc,
       clk320      => clk320,
       clk40       => clk40,
-      valid_i     => valid_i,
+      valid_i     => '1',
+
+      -- FIXME: parameterize these outputs in an array to avoid hardcoded sizes
       ic_data_i   => ic_data_i,
       ic_data_o   => ic_data_o,
-      ec_data_i   => ec_data_i,
-      ec_data_o   => ec_data_o,
+
       sca0_data_i => sca0_data_i,
-      sca0_data_o => sca0_data_o,
-      sca1_data_i => sca1_data_i,
-      sca1_data_o => sca1_data_o,
-      sca2_data_i => sca2_data_i,
-      sca2_data_o => sca2_data_o
+      sca0_data_o => sca0_data_o
       );
 
-  daq_lpgbt_link_wrapper : entity work.lpgbt_link_wrapper
+  lpgbt_link_wrapper : entity work.lpgbt_link_wrapper
     generic map (
       g_UPLINK_FEC       => FEC5,
       g_NUM_DOWNLINKS    => NUM_DOWNLINKS,
@@ -101,16 +111,16 @@ begin
       downlink_clk => clk320,
       uplink_clk   => clk320,
 
-      downlink_reset_i => reset,
-      uplink_reset_i   => reset,
+      downlink_reset_i => (others => reset),
+      uplink_reset_i   => (others => reset),
 
-      downlink_data_i => daq_downlink_data,
+      downlink_data_i => downlink_data,
       uplink_data_o   => daq_uplink_data,
 
-      downlink_mgt_word_array_o => daq_downlink_mgt_word_array,
+      downlink_mgt_word_array_o => downlink_mgt_word_array,
       uplink_mgt_word_array_i   => daq_uplink_mgt_word_array,
 
-      downlink_ready_o => daq_downlink_ready,
+      downlink_ready_o => downlink_ready,
       uplink_ready_o   => daq_uplink_ready,
 
       uplink_bitslip_o => daq_uplink_bitslip,
@@ -132,8 +142,8 @@ begin
       downlink_clk => clk320,
       uplink_clk   => clk320,
 
-      downlink_reset_i => reset,
-      uplink_reset_i   => reset,
+      downlink_reset_i => (others => reset),
+      uplink_reset_i   => (others => reset),
 
       downlink_data_i => (others => lpgbt_downlink_data_rt_zero),
       uplink_data_o   => trig_uplink_data,

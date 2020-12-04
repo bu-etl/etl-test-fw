@@ -1,2 +1,2 @@
 # -*- mode: TCL;-*-
-registers/*.vhd
+registers/*.vhd lib=ctrl_lib
