@@ -9,3 +9,4 @@ src/wrappers/mgt_wrapper.vhd
 #src/utils/skidbuffer.v
 #src/utils/*.vhd
 ip/kcu105_mgts/kcu105_mgts.xci
+ip/system_clocks/system_clocks.xci

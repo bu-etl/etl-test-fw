@@ -170,6 +170,18 @@ begin
         );
   end generate;
 
+
+  system_clocks_inst : entity work.system_clocks
+    port map (
+      reset     => '0',
+      clk_in1_p => osc_clk_p,
+      clk_in1_n => osc_clk_n,
+      clk_40    => clk40,
+      clk_320   => clk320,
+      locked    => open
+      );
+
+
   control_inst : entity work.control
     generic map (
       NUM_RBS => NUM_RBS
