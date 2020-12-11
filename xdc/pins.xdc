@@ -43,23 +43,24 @@ set_property IOSTANDARD LVDS [get_ports osc_clk_p]  ;
 set_property PACKAGE_PIN G10 [get_ports osc_clk_p] ; # updated
 set_property PACKAGE_PIN F10 [get_ports osc_clk_n] ; # updated
 
-set_property PACKAGE_PIN AP8 [get_ports {led[0]}];
-set_property PACKAGE_PIN H23 [get_ports {led[1]}];
-set_property PACKAGE_PIN P20 [get_ports {led[2]}];
-set_property PACKAGE_PIN P21 [get_ports {led[3]}];
-set_property PACKAGE_PIN N22 [get_ports {led[4]}];
-set_property PACKAGE_PIN M22 [get_ports {led[5]}];
-set_property PACKAGE_PIN R23 [get_ports {led[6]}];
-set_property PACKAGE_PIN P23 [get_ports {led[7]}];
-set_property IOSTANDARD LVCMOS18 [get_ports {led*}]
+set_property PACKAGE_PIN AP8 [get_ports {leds[0]}];
+set_property PACKAGE_PIN H23 [get_ports {leds[1]}];
+set_property PACKAGE_PIN P20 [get_ports {leds[2]}];
+set_property PACKAGE_PIN P21 [get_ports {leds[3]}];
+set_property PACKAGE_PIN N22 [get_ports {leds[4]}];
+set_property PACKAGE_PIN M22 [get_ports {leds[5]}];
+set_property PACKAGE_PIN R23 [get_ports {leds[6]}];
+set_property PACKAGE_PIN P23 [get_ports {leds[7]}];
+set_property IOSTANDARD LVCMOS18 [get_ports {leds*}]
 
 # refclks
-set_property PACKAGE_PIN P6 [get_ports {si570_refclk_p[0]}]; # bank 227 REFCLK0 QUADX0Y3
-set_property PACKAGE_PIN V6 [get_ports {sma_refclk_p[0]}]; # bank 226 REFCLK0
+set_property PACKAGE_PIN P6 [get_ports {si570_refclk_p}]; # bank 227 REFCLK0 QUADX0Y3
+set_property PACKAGE_PIN V6 [get_ports {sma_refclk_p}]; # bank 226 REFCLK0
 
 # bank 226
 set_property PACKAGE_PIN U4 [get_ports {sfp_txp[0]}]; # bank 226
 set_property PACKAGE_PIN W4 [get_ports {sfp_txp[1]}]; # bank 226
+
 set_property PACKAGE_PIN T2 [get_ports {sfp_rxp[0]}]; # bank 226
 set_property PACKAGE_PIN V2 [get_ports {sfp_rxp[1]}]; # bank 226
 
@@ -72,3 +73,12 @@ set_property PACKAGE_PIN F6 [get_ports {fmc_txp[4]}]; # bank 228
 set_property PACKAGE_PIN D6 [get_ports {fmc_txp[5]}]; # bank 228
 set_property PACKAGE_PIN C4 [get_ports {fmc_txp[6]}]; # bank 228
 set_property PACKAGE_PIN B6 [get_ports {fmc_txp[7]}]; # bank 228
+
+set_property PACKAGE_PIN M2 [get_ports {fmc_rxp[0]}]; # bank 227
+set_property PACKAGE_PIN K2 [get_ports {fmc_rxp[1]}]; # bank 227
+set_property PACKAGE_PIN H2 [get_ports {fmc_rxp[2]}]; # bank 227
+set_property PACKAGE_PIN F2 [get_ports {fmc_rxp[3]}]; # bank 227
+set_property PACKAGE_PIN E4 [get_ports {fmc_rxp[4]}]; # bank 228
+set_property PACKAGE_PIN D2 [get_ports {fmc_rxp[5]}]; # bank 228
+set_property PACKAGE_PIN B2 [get_ports {fmc_rxp[6]}]; # bank 228
+set_property PACKAGE_PIN A4 [get_ports {fmc_rxp[7]}]; # bank 228

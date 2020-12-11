@@ -35,7 +35,7 @@ entity etl_test_fw is
     NUM_SCAS        : integer := 1;
     NUM_DOWNLINKS   : integer := 1;
 
-    NUM_REFCLK : integer := 1
+    NUM_REFCLK : integer := 2
     );
   port(
 
@@ -55,18 +55,21 @@ entity etl_test_fw is
     osc_clk_n : in std_logic;
 
     -- Transceiver ref-clocks
-    refclkp : in  std_logic_vector(NUM_REFCLK - 1 downto 0);
-    refclkn : in  std_logic_vector(NUM_REFCLK - 1 downto 0);
+    si570_refclkp : in std_logic;
+    si570_refclkn : in std_logic;
 
-    sfp_txp     : out std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_txn     : out std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_rxp     : in  std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_rxn     : in  std_logic_vector(NUM_SFP - 1 downto 0);
+    sma_refclkp : in std_logic;
+    sma_refclkn : in std_logic;
 
-    fmc_txp     : out std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_txn     : out std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_rxp     : in  std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_rxn     : in  std_logic_vector(NUM_FMC - 1 downto 0);
+    sfp_txp : out std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_txn : out std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_rxp : in  std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_rxn : in  std_logic_vector(NUM_SFP - 1 downto 0);
+
+    fmc_txp : out std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_txn : out std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_rxp : in  std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_rxn : in  std_logic_vector(NUM_FMC - 1 downto 0);
 
     -- status LEDs
     leds : out std_logic_vector(7 downto 0)
@@ -78,10 +81,10 @@ architecture behavioral of etl_test_fw is
 
   constant NUM_GTS : integer := NUM_SFP + NUM_FMC;
 
-  signal txp     : std_logic_vector(NUM_GTS - 1 downto 0);
-  signal txn     : std_logic_vector(NUM_GTS - 1 downto 0);
-  signal rxp     : std_logic_vector(NUM_GTS - 1 downto 0);
-  signal rxn     : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal txp : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal txn : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal rxp : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal rxn : std_logic_vector(NUM_GTS - 1 downto 0);
 
   signal mgt_data_in  : std32_array_t (NUM_GTS-1 downto 0) := (others => (others => '0'));
   signal mgt_data_out : std32_array_t (NUM_GTS-1 downto 0);
@@ -100,7 +103,9 @@ architecture behavioral of etl_test_fw is
   signal ipb_w : ipb_wbus;
   signal ipb_r : ipb_rbus;
 
-  signal refclk : std_logic_vector (NUM_REFCLK-1 downto 0);
+  signal refclkp : std_logic_vector(NUM_REFCLK - 1 downto 0);
+  signal refclkn : std_logic_vector(NUM_REFCLK - 1 downto 0);
+  signal refclk   : std_logic_vector (NUM_REFCLK-1 downto 0);
 
   -- control and monitoring
   signal readout_board_mon  : READOUT_BOARD_Mon_array_t (NUM_RBS-1 downto 0);
@@ -122,7 +127,6 @@ begin
 
   leds(3 downto 2) <= "00";
   leds(7 downto 3) <= "00000";
-
 
   -- Infrastructure
 
@@ -173,7 +177,7 @@ begin
 
   system_clocks_inst : entity work.system_clocks
     port map (
-      reset     => '0',
+      reset     => std_logic0,
       clk_in1_p => osc_clk_p,
       clk_in1_n => osc_clk_n,
       clk_40    => clk40,
@@ -198,6 +202,10 @@ begin
       ipb_r              => ipb_r
       );
 
+  refclkp(0) <= si570_refclkp;
+  refclkn(0) <= si570_refclkn;
+  refclkp(1) <= sma_refclkp;
+  refclkn(1) <= sma_refclkn;
 
   refclkgen_inst : for I in 0 to NUM_REFCLK-1 generate
   begin
