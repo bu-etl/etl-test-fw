@@ -27,8 +27,8 @@ entity readout_board is
 
     reset : in std_logic;
 
-    mon   : out  READOUT_BOARD_MON_t;
-    ctrl  : in READOUT_BOARD_CTRL_t;
+    mon  : out READOUT_BOARD_MON_t;
+    ctrl : in  READOUT_BOARD_CTRL_t;
 
     trig_uplink_mgt_word_array : in  std32_array_t (NUM_LPGBTS_TRIG-1 downto 0);
     daq_uplink_mgt_word_array  : in  std32_array_t (NUM_LPGBTS_DAQ-1 downto 0);
@@ -59,10 +59,17 @@ architecture behavioral of readout_board is
   signal downlink_reset : std_logic_vector (NUM_DOWNLINKS-1 downto 0);
   signal downlink_ready : std_logic_vector (NUM_DOWNLINKS-1 downto 0);
 
-  attribute MARK_DEBUG                     : string;
-  attribute MARK_DEBUG of trig_uplink_data : signal is "TRUE";
-  attribute MARK_DEBUG of daq_uplink_data  : signal is "TRUE";
-  attribute MARK_DEBUG of downlink_data    : signal is "TRUE";
+  component ila_lpgbt
+    port (
+      clk : in std_logic;
+      probe0 : in std_logic_vector(31 downto 0);
+      probe1 : in std_logic_vector(31 downto 0);
+      probe2 : in std_logic_vector(31 downto 0);
+      probe3 : in std_logic_vector(223 downto 0);
+      probe4 : in std_logic_vector(1 downto 0);
+      probe5 : in std_logic_vector(1 downto 0)
+      );
+  end component;
 
   -- FIXME: connect these
 
@@ -75,22 +82,33 @@ architecture behavioral of readout_board is
 
 begin
 
+  ila_lpgbt_inst : ila_lpgbt
+    port map (
+      clk    => clk320,
+      probe0 => downlink_mgt_word_array(0),
+      probe1 => downlink_data(0).data,
+      probe2 => daq_uplink_mgt_word_array(0),
+      probe3 => daq_uplink_data(0).data,
+      probe4 => ic_data_i,
+      probe5 => ic_data_o
+      );
+
   gbt_controller_wrapper_inst : entity work.gbt_controller_wrapper
     generic map (
       g_CLK_FREQ       => 40,
       g_SCAS_PER_LPGBT => NUM_SCAS
       )
     port map (
-      reset_i     => reset,
-      mon         => mon.sc,
-      ctrl        => ctrl.sc,
-      clk320      => clk320,
-      clk40       => clk40,
-      valid_i     => '1',
+      reset_i => reset,
+      mon     => mon.sc,
+      ctrl    => ctrl.sc,
+      clk320  => clk320,
+      clk40   => clk40,
+      valid_i => '1',
 
       -- FIXME: parameterize these outputs in an array to avoid hardcoded sizes
-      ic_data_i   => ic_data_i,
-      ic_data_o   => ic_data_o,
+      ic_data_i => ic_data_i,
+      ic_data_o => ic_data_o,
 
       sca0_data_i => sca0_data_i,
       sca0_data_o => sca0_data_o

@@ -41,9 +41,37 @@ end control;
 architecture behavioral of control is
   signal ipb_w_array : ipb_wbus_array(N_SLAVES - 1 downto 0);
   signal ipb_r_array : ipb_rbus_array(N_SLAVES - 1 downto 0);
+
+  component ila_ipb
+    port (
+      clk    : in std_logic;
+      probe0 : in std_logic_vector(31 downto 0);
+      probe1 : in std_logic_vector(31 downto 0);
+      probe2 : in std_logic_vector(0 downto 0);
+      probe3 : in std_logic_vector(0 downto 0);
+      probe4 : in std_logic_vector(31 downto 0);
+      probe5 : in std_logic_vector(0 downto 0);
+      probe6 : in std_logic_vector(0 downto 0)
+      );
+  end component;
+
 begin
 
+  --------------------------------------------------------------------------------
   -- ipbus fabric selector
+  --------------------------------------------------------------------------------
+
+  ila_ipb_master_inst : ila_ipb
+    port map (
+      clk       => clock,
+      probe0    => ipb_w.ipb_addr,
+      probe1    => ipb_w.ipb_wdata,
+      probe2(0) => ipb_w.ipb_strobe,
+      probe3(0) => ipb_w.ipb_write,
+      probe4    => ipb_r.ipb_rdata,
+      probe5(0) => ipb_r.ipb_ack,
+      probe6(0) => ipb_r.ipb_err
+      );
 
   fabric : entity ipbus.ipbus_fabric_sel
     generic map(
@@ -55,6 +83,22 @@ begin
       sel             => ipbus_sel_etl_test_fw(ipb_w.ipb_addr),
       ipb_to_slaves   => ipb_w_array,
       ipb_from_slaves => ipb_r_array
+      );
+
+  --------------------------------------------------------------------------------
+  -- MGT Interface
+  --------------------------------------------------------------------------------
+
+  ila_mgt_inst : ila_ipb
+    port map (
+      clk       => clock,
+      probe0    => ipb_w_array(N_SLV_FW_INFO).ipb_addr,
+      probe1    => ipb_w_array(N_SLV_FW_INFO).ipb_wdata,
+      probe2(0) => ipb_w_array(N_SLV_FW_INFO).ipb_strobe,
+      probe3(0) => ipb_w_array(N_SLV_FW_INFO).ipb_write,
+      probe4    => ipb_r_array(N_SLV_FW_INFO).ipb_rdata,
+      probe5(0) => ipb_r_array(N_SLV_FW_INFO).ipb_ack,
+      probe6(0) => ipb_r_array(N_SLV_FW_INFO).ipb_err
       );
 
   MGT_wb_interface : entity ctrl_lib.MGT_wb_interface
@@ -72,6 +116,22 @@ begin
       ctrl      => mgt_ctrl
       );
 
+  --------------------------------------------------------------------------------
+  -- FW Info
+  --------------------------------------------------------------------------------
+
+  ila_ipb_fwinfo_inst : ila_ipb
+    port map (
+      clk       => clock,
+      probe0    => ipb_w_array(N_SLV_FW_INFO).ipb_addr,
+      probe1    => ipb_w_array(N_SLV_FW_INFO).ipb_wdata,
+      probe2(0) => ipb_w_array(N_SLV_FW_INFO).ipb_strobe,
+      probe3(0) => ipb_w_array(N_SLV_FW_INFO).ipb_write,
+      probe4    => ipb_r_array(N_SLV_FW_INFO).ipb_rdata,
+      probe5(0) => ipb_r_array(N_SLV_FW_INFO).ipb_ack,
+      probe6(0) => ipb_r_array(N_SLV_FW_INFO).ipb_err
+      );
+
   FW_INFO_wb_interface : entity ctrl_lib.FW_INFO_wb_interface
     port map (
       clk       => clock,
@@ -85,6 +145,10 @@ begin
       wb_err    => ipb_r_array(N_SLV_FW_INFO).ipb_err,
       mon       => fw_info_mon
       );
+
+  --------------------------------------------------------------------------------
+  -- Readout Board
+  --------------------------------------------------------------------------------
 
   rbgen : for I in 0 to NUM_RBS-1 generate
     constant RB_BASE : integer := N_SLV_READOUT_BOARD_0;
@@ -102,6 +166,18 @@ begin
         wb_err    => ipb_r_array(RB_BASE+I).ipb_err,
         mon       => readout_board_mon(I),
         ctrl      => readout_board_ctrl(I)
+        );
+
+    ila_ipb_rb_inst : ila_ipb
+      port map (
+        clk       => clock,
+        probe0    => ipb_w_array(RB_BASE+I).ipb_addr,
+        probe1    => ipb_w_array(RB_BASE+I).ipb_wdata,
+        probe2(0) => ipb_w_array(RB_BASE+I).ipb_strobe,
+        probe3(0) => ipb_w_array(RB_BASE+I).ipb_write,
+        probe4    => ipb_r_array(RB_BASE+I).ipb_rdata,
+        probe5(0) => ipb_r_array(RB_BASE+I).ipb_ack,
+        probe6(0) => ipb_r_array(RB_BASE+I).ipb_err
         );
   end generate;
 

@@ -11,3 +11,5 @@ src/utils/cylon.v
 #src/utils/*.vhd
 ip/kcu105_mgts/kcu105_mgts.xci
 ip/system_clocks/system_clocks.xci
+ip/ila_ipb/ipb_ila.xci
+ip/ila_lpgbt/ipb_lpgbt.xci
