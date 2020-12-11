@@ -79,6 +79,8 @@ end etl_test_fw;
 
 architecture behavioral of etl_test_fw is
 
+  signal clk_osc : std_logic;
+
   constant NUM_GTS : integer := NUM_SFP + NUM_FMC;
 
   signal txp : std_logic_vector(NUM_GTS - 1 downto 0);
@@ -105,7 +107,7 @@ architecture behavioral of etl_test_fw is
 
   signal refclkp : std_logic_vector(NUM_REFCLK - 1 downto 0);
   signal refclkn : std_logic_vector(NUM_REFCLK - 1 downto 0);
-  signal refclk   : std_logic_vector (NUM_REFCLK-1 downto 0);
+  signal refclk  : std_logic_vector (NUM_REFCLK-1 downto 0);
 
   -- control and monitoring
   signal readout_board_mon  : READOUT_BOARD_Mon_array_t (NUM_RBS-1 downto 0);
@@ -115,6 +117,16 @@ architecture behavioral of etl_test_fw is
   signal mgt_ctrl : MGT_Ctrl_t;
 
   signal fw_info_mon : FW_INFO_Mon_t;
+
+  component system_clocks is
+    port (
+      reset     : in  std_logic;
+      clk_in200 : in  std_logic;
+      clk_40    : out std_logic;
+      clk_320   : out std_logic;
+      locked    : out std_logic
+      );
+  end component;
 
 begin
 
@@ -128,9 +140,15 @@ begin
   leds(3 downto 2) <= "00";
   leds(7 downto 3) <= "00000";
 
+  osc_clk_ibuf : IBUFDS
+    port map(
+      i  => osc_clk_p,
+      ib => osc_clk_n,
+      o  => clk_osc
+      );
   -- Infrastructure
 
-  infra : entity ipbus.k800_infra
+  infra : entity ipbus.pcie_infra
     port map(
       pcie_sys_clk_p => pcie_sys_clk_p,
       pcie_sys_clk_n => pcie_sys_clk_n,
@@ -139,8 +157,7 @@ begin
       pcie_rx_n      => pcie_rx_n,
       pcie_tx_p      => pcie_tx_p,
       pcie_tx_n      => pcie_tx_n,
-      osc_clk_p      => osc_clk_p,
-      osc_clk_n      => osc_clk_n,
+      clk_osc        => clk_osc,
       ipb_clk        => ipb_clk,
       ipb_rst        => ipb_rst,
       nuke           => nuke,
@@ -174,17 +191,14 @@ begin
         );
   end generate;
 
-
-  system_clocks_inst : entity work.system_clocks
+  system_clocks_inst : system_clocks
     port map (
       reset     => std_logic0,
-      clk_in1_p => osc_clk_p,
-      clk_in1_n => osc_clk_n,
+      clk_in200 => clk_osc,
       clk_40    => clk40,
       clk_320   => clk320,
       locked    => open
       );
-
 
   control_inst : entity work.control
     generic map (
