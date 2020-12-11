@@ -28,7 +28,8 @@ entity etl_test_fw is
     NUM_TX         : integer := 2;
     NUM_RX         : integer := 2;
 
-    NUM_GTS         : integer := 10;
+    NUM_SFP         : integer := 2;
+    NUM_FMC         : integer := 8;
     NUM_LPGBTS_DAQ  : integer := 1;
     NUM_LPGBTS_TRIG : integer := 1;
     NUM_SCAS        : integer := 1;
@@ -57,10 +58,15 @@ entity etl_test_fw is
     refclkp : in  std_logic_vector(NUM_REFCLK - 1 downto 0);
     refclkn : in  std_logic_vector(NUM_REFCLK - 1 downto 0);
 
-    txp     : out std_logic_vector(NUM_GTS - 1 downto 0);
-    txn     : out std_logic_vector(NUM_GTS - 1 downto 0);
-    rxp     : in  std_logic_vector(NUM_GTS - 1 downto 0);
-    rxn     : in  std_logic_vector(NUM_GTS - 1 downto 0);
+    sfp_txp     : out std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_txn     : out std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_rxp     : in  std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_rxn     : in  std_logic_vector(NUM_SFP - 1 downto 0);
+
+    fmc_txp     : out std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_txn     : out std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_rxp     : in  std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_rxn     : in  std_logic_vector(NUM_FMC - 1 downto 0);
 
     -- status LEDs
     leds : out std_logic_vector(7 downto 0)
@@ -69,6 +75,13 @@ entity etl_test_fw is
 end etl_test_fw;
 
 architecture behavioral of etl_test_fw is
+
+  constant NUM_GTS : integer := NUM_SFP + NUM_FMC;
+
+  signal txp     : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal txn     : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal rxp     : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal rxn     : std_logic_vector(NUM_GTS - 1 downto 0);
 
   signal mgt_data_in  : std32_array_t (NUM_GTS-1 downto 0) := (others => (others => '0'));
   signal mgt_data_out : std32_array_t (NUM_GTS-1 downto 0);
@@ -99,6 +112,9 @@ architecture behavioral of etl_test_fw is
   signal fw_info_mon : FW_INFO_Mon_t;
 
 begin
+
+  txp <= fmc_txp & sfp_txp;
+  rxp <= fmc_txp & sfp_txp;
 
   nuke           <= '0';
   soft_rst       <= '0';
