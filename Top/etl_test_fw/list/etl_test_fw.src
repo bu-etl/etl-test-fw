@@ -4,6 +4,7 @@ src/wrappers/lpgbt_link_wrapper.vhd
 src/wrappers/lpgbt_pkg.vhd
 src/wrappers/sc_wrapper.vhd
 src/wrappers/mgt_wrapper.vhd
+src/utils/cylon.v
 #src/wrappers/interconnect_wrapper.vhd
 #src/utils/wbm2axisp.v
 #src/utils/skidbuffer.v

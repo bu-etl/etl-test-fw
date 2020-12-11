@@ -118,6 +118,16 @@ architecture behavioral of etl_test_fw is
 
   signal fw_info_mon : FW_INFO_Mon_t;
 
+  component cylon1 is
+    port (
+      clock   : in  std_logic;
+      rate    : in  std_logic_vector (1 downto 0);
+      q       : out std_logic_vector (7 downto 0)
+      );
+  end component;
+
+  signal cylon : std_logic_vector (7 downto 0);
+
   component system_clocks is
     port (
       reset     : in  std_logic;
@@ -130,12 +140,18 @@ architecture behavioral of etl_test_fw is
 
 begin
 
+  cylon1_inst : cylon1
+    port map (
+      clock   => clk40,
+      rate    => "00",
+      q       => cylon
+      );
+
   nuke           <= '0';
   soft_rst       <= '0';
   pcie_sys_rst_n <= not pcie_sys_rst;
 
-  leds(3 downto 2) <= "00";
-  leds(7 downto 3) <= "00000";
+  leds(7 downto 0) <= cylon (7 downto 0);
 
   osc_clk_ibuf : IBUFDS
     port map(
