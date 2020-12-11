@@ -27,9 +27,9 @@ init:
 	git submodule update --init --recursive
 
 reg: decode
-	rm registers/*_PKG.vhd
-	rm registers/*_PKG.yml
-	rm registers/*_map.vhd
+	rm -f registers/*_PKG.vhd
+	rm -f registers/*_PKG.yml
+	rm -f registers/*_map.vhd
 	cd regmap && make
 
 decode:
