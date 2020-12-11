@@ -58,27 +58,28 @@ set_property PACKAGE_PIN P6 [get_ports {si570_refclk_p}]; # bank 227 REFCLK0 QUA
 set_property PACKAGE_PIN V6 [get_ports {sma_refclk_p}]; # bank 226 REFCLK0
 
 # bank 226
-set_property PACKAGE_PIN U4 [get_ports {sfp_txp[0]}]; # bank 226
-set_property PACKAGE_PIN W4 [get_ports {sfp_txp[1]}]; # bank 226
+set_property PACKAGE_PIN U4 [get_ports {sfp_tx_p[0]}]; # bank 226
+set_property PACKAGE_PIN W4 [get_ports {sfp_tx_p[1]}]; # bank 226
 
-set_property PACKAGE_PIN T2 [get_ports {sfp_rxp[0]}]; # bank 226
-set_property PACKAGE_PIN V2 [get_ports {sfp_rxp[1]}]; # bank 226
+set_property PACKAGE_PIN T2 [get_ports {sfp_rx_p[0]}]; # bank 226
+set_property PACKAGE_PIN V2 [get_ports {sfp_rx_p[1]}]; # bank 226
 
 # bank 227
-set_property PACKAGE_PIN N4 [get_ports {fmc_txp[0]}]; # bank 227
-set_property PACKAGE_PIN L4 [get_ports {fmc_txp[1]}]; # bank 227
-set_property PACKAGE_PIN J4 [get_ports {fmc_txp[2]}]; # bank 227
-set_property PACKAGE_PIN G4 [get_ports {fmc_txp[3]}]; # bank 227
-set_property PACKAGE_PIN F6 [get_ports {fmc_txp[4]}]; # bank 228
-set_property PACKAGE_PIN D6 [get_ports {fmc_txp[5]}]; # bank 228
-set_property PACKAGE_PIN C4 [get_ports {fmc_txp[6]}]; # bank 228
-set_property PACKAGE_PIN B6 [get_ports {fmc_txp[7]}]; # bank 228
+# pin assignments from ug917-kcu105-eval-bd.pdf
+set_property PACKAGE_PIN F6 [get_ports {fmc_tx_p[0]}]; # bank 228 HPC_DP0_C2M_P
+set_property PACKAGE_PIN D6 [get_ports {fmc_tx_p[1]}]; # bank 228 HPC_DP1_C2M_P
+set_property PACKAGE_PIN C4 [get_ports {fmc_tx_p[2]}]; # bank 228 HPC_DP2_C2M_P
+set_property PACKAGE_PIN B6 [get_ports {fmc_tx_p[3]}]; # bank 228 HPC_DP3_C2M_P
+set_property PACKAGE_PIN N4 [get_ports {fmc_tx_p[4]}]; # bank 227 HPC_DP4_C2M_P
+set_property PACKAGE_PIN L4 [get_ports {fmc_tx_p[6]}]; # bank 227 HPC_DP6_C2M_P
+set_property PACKAGE_PIN J4 [get_ports {fmc_tx_p[5]}]; # bank 227 HPC_DP5_C2M_P
+set_property PACKAGE_PIN G4 [get_ports {fmc_tx_p[7]}]; # bank 227 HPC_DP7_C2M_P
 
-set_property PACKAGE_PIN M2 [get_ports {fmc_rxp[0]}]; # bank 227
-set_property PACKAGE_PIN K2 [get_ports {fmc_rxp[1]}]; # bank 227
-set_property PACKAGE_PIN H2 [get_ports {fmc_rxp[2]}]; # bank 227
-set_property PACKAGE_PIN F2 [get_ports {fmc_rxp[3]}]; # bank 227
-set_property PACKAGE_PIN E4 [get_ports {fmc_rxp[4]}]; # bank 228
-set_property PACKAGE_PIN D2 [get_ports {fmc_rxp[5]}]; # bank 228
-set_property PACKAGE_PIN B2 [get_ports {fmc_rxp[6]}]; # bank 228
-set_property PACKAGE_PIN A4 [get_ports {fmc_rxp[7]}]; # bank 228
+set_property PACKAGE_PIN E4 [get_ports {fmc_rx_p[0]}]; # bank 228 HPC_DP0_M2C_P
+set_property PACKAGE_PIN D2 [get_ports {fmc_rx_p[1]}]; # bank 228 HPC_DP1_M2C_P
+set_property PACKAGE_PIN B2 [get_ports {fmc_rx_p[2]}]; # bank 228 HPC_DP2_M2C_P
+set_property PACKAGE_PIN A4 [get_ports {fmc_rx_p[3]}]; # bank 228 HPC_DP3_M2C_P
+set_property PACKAGE_PIN M2 [get_ports {fmc_rx_p[4]}]; # bank 227 HPC_DP4_M2C_P
+set_property PACKAGE_PIN K2 [get_ports {fmc_rx_p[6]}]; # bank 227 HPC_DP6_M2C_P
+set_property PACKAGE_PIN H2 [get_ports {fmc_rx_p[5]}]; # bank 227 HPC_DP5_M2C_P
+set_property PACKAGE_PIN F2 [get_ports {fmc_rx_p[7]}]; # bank 227 HPC_DP7_M2C_P

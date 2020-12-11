@@ -55,21 +55,21 @@ entity etl_test_fw is
     osc_clk_n : in std_logic;
 
     -- Transceiver ref-clocks
-    si570_refclkp : in std_logic;
-    si570_refclkn : in std_logic;
+    si570_refclk_p : in std_logic;
+    si570_refclk_n : in std_logic;
 
-    sma_refclkp : in std_logic;
-    sma_refclkn : in std_logic;
+    sma_refclk_p : in std_logic;
+    sma_refclk_n : in std_logic;
 
-    sfp_txp : out std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_txn : out std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_rxp : in  std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_rxn : in  std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_tx_p : out std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_tx_n : out std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_rx_p : in  std_logic_vector(NUM_SFP - 1 downto 0);
+    sfp_rx_n : in  std_logic_vector(NUM_SFP - 1 downto 0);
 
-    fmc_txp : out std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_txn : out std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_rxp : in  std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_rxn : in  std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_tx_p : out std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_tx_n : out std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_rx_p : in  std_logic_vector(NUM_FMC - 1 downto 0);
+    fmc_rx_n : in  std_logic_vector(NUM_FMC - 1 downto 0);
 
     -- status LEDs
     leds : out std_logic_vector(7 downto 0)
@@ -83,10 +83,10 @@ architecture behavioral of etl_test_fw is
 
   constant NUM_GTS : integer := NUM_SFP + NUM_FMC;
 
-  signal txp : std_logic_vector(NUM_GTS - 1 downto 0);
-  signal txn : std_logic_vector(NUM_GTS - 1 downto 0);
-  signal rxp : std_logic_vector(NUM_GTS - 1 downto 0);
-  signal rxn : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal tx_p : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal tx_n : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal rx_p : std_logic_vector(NUM_GTS - 1 downto 0);
+  signal rx_n : std_logic_vector(NUM_GTS - 1 downto 0);
 
   signal mgt_data_in  : std32_array_t (NUM_GTS-1 downto 0) := (others => (others => '0'));
   signal mgt_data_out : std32_array_t (NUM_GTS-1 downto 0);
@@ -105,8 +105,8 @@ architecture behavioral of etl_test_fw is
   signal ipb_w : ipb_wbus;
   signal ipb_r : ipb_rbus;
 
-  signal refclkp : std_logic_vector(NUM_REFCLK - 1 downto 0);
-  signal refclkn : std_logic_vector(NUM_REFCLK - 1 downto 0);
+  signal refclk_p : std_logic_vector(NUM_REFCLK - 1 downto 0);
+  signal refclk_n : std_logic_vector(NUM_REFCLK - 1 downto 0);
   signal refclk  : std_logic_vector (NUM_REFCLK-1 downto 0);
 
   -- control and monitoring
@@ -129,9 +129,6 @@ architecture behavioral of etl_test_fw is
   end component;
 
 begin
-
-  txp <= fmc_txp & sfp_txp;
-  rxp <= fmc_txp & sfp_txp;
 
   nuke           <= '0';
   soft_rst       <= '0';
@@ -216,10 +213,10 @@ begin
       ipb_r              => ipb_r
       );
 
-  refclkp(0) <= si570_refclkp;
-  refclkn(0) <= si570_refclkn;
-  refclkp(1) <= sma_refclkp;
-  refclkn(1) <= sma_refclkn;
+  refclk_p(0) <= si570_refclk_p;
+  refclk_n(0) <= si570_refclk_n;
+  refclk_p(1) <= sma_refclk_p;
+  refclk_n(1) <= sma_refclk_n;
 
   refclkgen_inst : for I in 0 to NUM_REFCLK-1 generate
   begin
@@ -233,11 +230,18 @@ begin
         O     => refclk(I),
         ODIV2 => open,
         CEB   => '0',
-        I     => refclkp(I),
-        IB    => refclkn(I)
+        I     => refclk_p(I),
+        IB    => refclk_n(I)
         );
 
   end generate;
+
+  fmc_tx_p <= tx_p(9 downto 2);
+  fmc_tx_n <= tx_p(9 downto 2);
+  sfp_tx_p <= tx_p(1 downto 0);
+  sfp_tx_n <= tx_p(1 downto 0);
+  rx_p <= fmc_rx_p & sfp_rx_p;
+  rx_n <= fmc_rx_n & sfp_rx_n;
 
   mgt_wrapper_inst : entity work.mgt_wrapper
     generic map (
@@ -245,11 +249,11 @@ begin
       )
     port map (
       drp_clk => clk40,
-      rxp_in  => rxp,
-      rxn_in  => rxn,
+      rxp_in  => rx_p,
+      rxn_in  => rx_n,
 
-      txp_out => txp,
-      txn_out => txn,
+      txp_out => tx_p,
+      txn_out => tx_n,
 
       data_in  => mgt_data_in,
       data_out => mgt_data_out,
