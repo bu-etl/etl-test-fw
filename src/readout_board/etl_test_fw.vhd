@@ -189,7 +189,7 @@ begin
 
   refclkgen_inst : for I in 0 to NUM_REFCLK-1 generate
   begin
-    refclk_ibufds : ibufds_gte4
+    refclk_ibufds : ibufds_gte3
       generic map(
         REFCLK_EN_TX_PATH  => '0',
         REFCLK_HROW_CK_SEL => (others => '0'),
