@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<node id="LOOPBACK" fwinfo="endpoint; width=1">
+      <node id="LOOPBACK" address="0x0"  permission="rw" mask="0xFFFFFFFF"/>
+</node>

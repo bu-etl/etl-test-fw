@@ -39,6 +39,9 @@ entity control is
 end control;
 
 architecture behavioral of control is
+
+  signal loopback : std_logic_vector (31 downto 0) := x"01234567";
+
   signal ipb_w_array : ipb_wbus_array(N_SLAVES - 1 downto 0);
   signal ipb_r_array : ipb_rbus_array(N_SLAVES - 1 downto 0);
 
@@ -56,6 +59,23 @@ architecture behavioral of control is
   end component;
 
 begin
+
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      ipb_r_array(N_SLV_LOOPBACK).ipb_ack <= '0';
+      ipb_r_array(N_SLV_LOOPBACK).ipb_err <= '0';
+      if (ipb_w_array(N_SLV_LOOPBACK).ipb_strobe) then
+        ipb_r_array(N_SLV_LOOPBACK).ipb_ack <= '1';
+        if (ipb_w_array(N_SLV_LOOPBACK).ipb_write) then
+          loopback <= ipb_w_array(N_SLV_LOOPBACK).ipb_wdata;
+        else
+          ipb_r_array(N_SLV_LOOPBACK).ipb_rdata <= loopback;
+        end if;
+      end if;
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- ipbus fabric selector
