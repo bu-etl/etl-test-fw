@@ -6,16 +6,16 @@ digraph {
 
   "PCIE" -> "K800 Infra"
   {rank=same; "SFP/Firefly", "PCIE"}
-  {rank=same; "IPBus\nFabric Sel" , "MGT\nWrapper"}
+  {rank=same; "Control" , "MGT\nWrapper"}
   //"etl_test_fw"
   //"etl_test_fw" -> "K800 Infra"
-  //"etl_test_fw" -> "IPBus\nFabric Sel"
+  //"etl_test_fw" -> "Control"
   //"etl_test_fw" -> "MGT\nWrapper"
   //"etl_test_fw" -> "Readout\nBoards"
-  //{rank=same; "K800 Infra", "IPBus\nFabric Sel", "MGT\nWrapper", "Readout\nBoards"}
+  //{rank=same; "K800 Infra", "Control", "MGT\nWrapper", "Readout\nBoards"}
 
-  "IPBus\nFabric Sel" -> "MGT\nWrapper"
-  "IPBus\nFabric Sel" -> "Readout\nBoard"
+  "Control" -> "MGT\nWrapper"
+  "Control" -> "Readout\nBoard"
 
   subgraph cluster_k800 {
     graph[style=dotted];
@@ -28,7 +28,7 @@ digraph {
     //"XDMA" -> "AXI IPBus\nTransport" -> "IPBus\nTransactor"
     {rank=same; "XDMA" , "AXI IPBus\nTransport" , "IPBus\nTransactor"}
   }
-  //"IPBus\nFabric Sel" -> "Readout\nBoards"
+  //"Control" -> "Readout\nBoards"
 
 
   "SFP/Firefly" -> "MGT\nWrapper"
@@ -58,7 +58,7 @@ digraph {
     }
   }
 
-  "IPBus\nTransactor" -> "IPBus\nFabric Sel"
+  "IPBus\nTransactor" -> "Control"
 
 
 }
