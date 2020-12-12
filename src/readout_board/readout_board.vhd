@@ -116,7 +116,7 @@ begin
 
   lpgbt_link_wrapper : entity work.lpgbt_link_wrapper
     generic map (
-      g_UPLINK_FEC       => FEC5,
+      g_UPLINK_FEC       => FEC12,
       g_NUM_DOWNLINKS    => NUM_DOWNLINKS,
       g_NUM_UPLINKS      => NUM_LPGBTS_DAQ,
       g_PIPELINE_BITSLIP => true,
@@ -147,7 +147,7 @@ begin
 
   trig_lpgbt_link_wrapper : entity work.lpgbt_link_wrapper
     generic map (
-      g_UPLINK_FEC       => FEC5,
+      g_UPLINK_FEC       => FEC12,
       g_NUM_DOWNLINKS    => 0,
       g_NUM_UPLINKS      => NUM_LPGBTS_TRIG,
       g_PIPELINE_BITSLIP => true,
