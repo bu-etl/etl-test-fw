@@ -233,8 +233,8 @@ begin
       NUM_RBS => NUM_RBS
       )
     port map (
-      reset              => reset,
-      clock              => clk40,
+      reset              => ipb_rst,
+      clock              => ipb_clk,
       fw_info_mon        => fw_info_mon,
       readout_board_mon  => readout_board_mon,
       readout_board_ctrl => readout_board_ctrl,
