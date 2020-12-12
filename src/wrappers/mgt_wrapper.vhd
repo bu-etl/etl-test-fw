@@ -26,6 +26,8 @@ entity mgt_wrapper is
     data_in  : in  std32_array_t (NUM_GTS-1 downto 0);
     data_out : out std32_array_t (NUM_GTS-1 downto 0);
 
+    rxslide_in : in  std_logic_vector(NUM_GTS-1 downto 0);
+
     userclk_rx_usrclk_out  : out std_logic;
     userclk_rx_usrclk2_out : out std_logic;
 
@@ -74,6 +76,8 @@ architecture behavioral of mgt_wrapper is
       gtwiz_userdata_rx_out              : out std_logic_vector(NUM_GTS*32-1 downto 0);
 
       gtrefclk00_in : in std_logic_vector(2 downto 0);
+
+      rxslide_in : in  std_logic_vector(NUM_GTS-1 downto 0);
 
       drpaddr_common_in : in  std_logic_vector(9*NUM_QUADS-1 downto 0);
       drpclk_common_in  : in  std_logic_vector(NUM_QUADS-1 downto 0);
@@ -189,6 +193,8 @@ begin
       drpwe_in   => drpwe,
       drpdo_out  => drpdo,
       drprdy_out => drprdy,
+
+      rxslide_in => rxslide_in,
 
       gtpowergood_out    => mon.status.gtpowergood_out,
       rxpmaresetdone_out => mon.status.rxpmaresetdone_out,
