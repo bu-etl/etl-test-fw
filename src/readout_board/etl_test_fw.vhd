@@ -20,22 +20,32 @@ use ipbus.ipbus_decode_etl_test_fw.all;
 
 entity etl_test_fw is
   generic(
-    SCAS_PER_LPGBT : integer := 1;
-    NUM_SIMPLEX    : integer := 0;
-    NUM_EMUL       : integer := 1;
-    NUM_DUPLEX     : integer := 1;
-    NUM_RBS        : integer := 1;
-    NUM_TX         : integer := 2;
-    NUM_RX         : integer := 2;
 
-    NUM_SFP         : integer := 2;
-    NUM_FMC         : integer := 8;
-    NUM_LPGBTS_DAQ  : integer := 1;
-    NUM_LPGBTS_TRIG : integer := 1;
-    NUM_SCAS        : integer := 1;
-    NUM_DOWNLINKS   : integer := 1;
+    NUM_RBS : integer := 5;             -- Number of readout boards
 
-    NUM_REFCLK : integer := 2
+    NUM_SFP : integer := 2;             -- Number of SFP fibers
+    NUM_FMC : integer := 8;             -- Number of FMC fibers
+
+    NUM_LPGBTS_DAQ  : integer := 1;     -- Number of DAQ / Rb
+    NUM_LPGBTS_TRIG : integer := 1;     -- Number of Trig / Rb
+    NUM_DOWNLINKS   : integer := 1;     -- Number of Downlinks / Rb
+    NUM_SCAS        : integer := 1;     -- Number of SCAs / Downlink
+
+    NUM_REFCLK : integer := 2;
+
+    -- these generics get set by hog at synthesis
+    GLOBAL_FWDATE       : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_FWTIME       : std_logic_vector (31 downto 0) := x"00000000";
+    OFFICIAL            : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_FWHASH       : std_logic_vector (31 downto 0) := x"00000000";
+    TOP_FWHASH          : std_logic_vector (31 downto 0) := x"00000000";
+    XML_HASH            : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_FWVERSION    : std_logic_vector (31 downto 0) := x"00000000";
+    TOP_FWVERSION       : std_logic_vector (31 downto 0) := x"00000000";
+    XML_VERSION         : std_logic_vector (31 downto 0) := x"00000000";
+    HOG_FWHASH          : std_logic_vector (31 downto 0) := x"00000000";
+    FRAMEWORK_FWVERSION : std_logic_vector (31 downto 0) := x"00000000";
+    FRAMEWORK_FWHASH    : std_logic_vector (31 downto 0) := x"00000000"
     );
   port(
 
@@ -280,4 +290,18 @@ begin
       ctrl => mgt_ctrl
 
       );
+
+  fw_info_mon.HOG_INFO.GLOBAL_FWDATE       <= GLOBAL_FWDATE;
+  fw_info_mon.HOG_INFO.GLOBAL_FWTIME       <= GLOBAL_FWTIME;
+  fw_info_mon.HOG_INFO.OFFICIAL            <= OFFICIAL;
+  fw_info_mon.HOG_INFO.GLOBAL_FWHASH       <= GLOBAL_FWHASH;
+  fw_info_mon.HOG_INFO.TOP_FWHASH          <= TOP_FWHASH;
+  fw_info_mon.HOG_INFO.XML_HASH            <= XML_HASH;
+  fw_info_mon.HOG_INFO.GLOBAL_FWVERSION    <= GLOBAL_FWVERSION;
+  fw_info_mon.HOG_INFO.TOP_FWVERSION       <= TOP_FWVERSION;
+  fw_info_mon.HOG_INFO.XML_VERSION         <= XML_VERSION;
+  fw_info_mon.HOG_INFO.HOG_FWHASH          <= HOG_FWHASH;
+  fw_info_mon.HOG_INFO.FRAMEWORK_FWVERSION <= FRAMEWORK_FWVERSION;
+  fw_info_mon.HOG_INFO.FRAMEWORK_FWHASH    <= FRAMEWORK_FWHASH;
+
 end behavioral;
