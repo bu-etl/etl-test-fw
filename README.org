@@ -10,10 +10,10 @@
 
 ** Build Instructions
 #+begin_src
-make
+make init
+make all
 #+end_src
 
-(make sure you ~git submodule init && git submodule update~ first)
 ** Directories
 #+begin_src
 ├── README.org     -- This readme
