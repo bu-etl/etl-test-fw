@@ -42,7 +42,6 @@ architecture behavioral of readout_board is
   --------------------------------------------------------------------------------
   -- LPGBT Glue
   --------------------------------------------------------------------------------
-
   signal trig_uplink_data    : lpgbt_uplink_data_rt_array (NUM_LPGBTS_TRIG-1 downto 0);
   signal trig_uplink_reset   : std_logic_vector (NUM_LPGBTS_TRIG-1 downto 0);
   signal trig_uplink_ready   : std_logic_vector (NUM_LPGBTS_TRIG-1 downto 0);
@@ -59,9 +58,24 @@ architecture behavioral of readout_board is
   signal downlink_reset : std_logic_vector (NUM_DOWNLINKS-1 downto 0);
   signal downlink_ready : std_logic_vector (NUM_DOWNLINKS-1 downto 0);
 
+  attribute DONT_TOUCH                        : string;
+  attribute DONT_TOUCH of daq_uplink_data     : signal is "true";
+  attribute DONT_TOUCH of daq_uplink_reset    : signal is "true";
+  attribute DONT_TOUCH of daq_uplink_ready    : signal is "true";
+  attribute DONT_TOUCH of daq_uplink_bitslip  : signal is "true";
+  attribute DONT_TOUCH of daq_uplink_fec_err  : signal is "true";
+  attribute DONT_TOUCH of trig_uplink_data    : signal is "true";
+  attribute DONT_TOUCH of trig_uplink_reset   : signal is "true";
+  attribute DONT_TOUCH of trig_uplink_ready   : signal is "true";
+  attribute DONT_TOUCH of trig_uplink_bitslip : signal is "true";
+  attribute DONT_TOUCH of trig_uplink_fec_err : signal is "true";
+  attribute DONT_TOUCH of downlink_data       : signal is "true";
+  attribute DONT_TOUCH of downlink_reset      : signal is "true";
+  attribute DONT_TOUCH of downlink_ready      : signal is "true";
+
   component ila_lpgbt
     port (
-      clk : in std_logic;
+      clk    : in std_logic;
       probe0 : in std_logic_vector(31 downto 0);
       probe1 : in std_logic_vector(31 downto 0);
       probe2 : in std_logic_vector(31 downto 0);
@@ -80,7 +94,16 @@ architecture behavioral of readout_board is
   signal sca0_data_i : std_logic_vector (1 downto 0);
   signal sca0_data_o : std_logic_vector (1 downto 0);
 
+  signal counter : integer := 0;
+
 begin
+
+  process (clk40) is
+  begin
+    if (rising_edge(clk40)) then
+      counter <= counter + 1;
+    end if;
+  end process;
 
   ila_lpgbt_inst : ila_lpgbt
     port map (
@@ -113,6 +136,8 @@ begin
       sca0_data_i => sca0_data_i,
       sca0_data_o => sca0_data_o
       );
+
+  downlink_data(0).data <= std_logic_vector (to_unsigned(counter, 32));
 
   lpgbt_link_wrapper : entity work.lpgbt_link_wrapper
     generic map (
