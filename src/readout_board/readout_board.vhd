@@ -39,6 +39,8 @@ end readout_board;
 
 architecture behavioral of readout_board is
 
+  signal valid : std_logic;
+
   --------------------------------------------------------------------------------
   -- LPGBT Glue
   --------------------------------------------------------------------------------
@@ -98,6 +100,8 @@ architecture behavioral of readout_board is
 
 begin
 
+  valid <= '1' when std_logic_vector(to_unsigned(counter,3)) = "000" else '1';
+
   process (clk40) is
   begin
     if (rising_edge(clk40)) then
@@ -105,7 +109,7 @@ begin
     end if;
   end process;
 
-  ila_lpgbt_inst : ila_lpgbt
+  ila_daq_lpgbt_inst : ila_lpgbt
     port map (
       clk    => clk320,
       probe0 => downlink_mgt_word_array(0),
@@ -114,6 +118,17 @@ begin
       probe3 => daq_uplink_data(0).data,
       probe4 => ic_data_i,
       probe5 => ic_data_o
+      );
+
+  ila_trg_lpgbt_inst : ila_lpgbt
+    port map (
+      clk    => clk320,
+      probe0 => (others => '0'),
+      probe1 => (others => '0'),
+      probe2 => trig_uplink_mgt_word_array(0),
+      probe3 => trig_uplink_data(0).data,
+      probe4 => "00",
+      probe5 => "00"
       );
 
   gbt_controller_wrapper_inst : entity work.gbt_controller_wrapper
@@ -130,14 +145,15 @@ begin
       valid_i => '1',
 
       -- FIXME: parameterize these outputs in an array to avoid hardcoded sizes
-      ic_data_i => ic_data_i,
-      ic_data_o => ic_data_o,
+      ic_data_i => daq_uplink_data(0).ic,
+      ic_data_o => downlink_data(0).ic,
 
-      sca0_data_i => sca0_data_i,
-      sca0_data_o => sca0_data_o
+      sca0_data_i => daq_uplink_data(0).ec,
+      sca0_data_o => downlink_data(0).ec
       );
 
   downlink_data(0).data <= std_logic_vector (to_unsigned(counter, 32));
+  downlink_data(0).valid <= valid;
 
   lpgbt_link_wrapper : entity work.lpgbt_link_wrapper
     generic map (

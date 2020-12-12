@@ -119,7 +119,7 @@ architecture behavioral of etl_test_fw is
 
   signal refclk_p : std_logic_vector(NUM_REFCLK - 1 downto 0);
   signal refclk_n : std_logic_vector(NUM_REFCLK - 1 downto 0);
-  signal refclk  : std_logic_vector (NUM_REFCLK-1 downto 0);
+  signal refclk   : std_logic_vector (NUM_REFCLK-1 downto 0);
 
   -- control and monitoring
   signal readout_board_mon  : READOUT_BOARD_Mon_array_t (NUM_RBS-1 downto 0);
@@ -132,9 +132,9 @@ architecture behavioral of etl_test_fw is
 
   component cylon1 is
     port (
-      clock   : in  std_logic;
-      rate    : in  std_logic_vector (1 downto 0);
-      q       : out std_logic_vector (7 downto 0)
+      clock : in  std_logic;
+      rate  : in  std_logic_vector (1 downto 0);
+      q     : out std_logic_vector (7 downto 0)
       );
   end component;
 
@@ -157,9 +157,9 @@ begin
 
   cylon1_inst : cylon1
     port map (
-      clock   => clk40,
-      rate    => "00",
-      q       => cylon
+      clock => clk40,
+      rate  => "00",
+      q     => cylon
       );
 
   nuke           <= '0';
@@ -273,13 +273,21 @@ begin
   sfp_tx_n <= tx_p(1 downto 0);
   rx_p <= fmc_rx_p & sfp_rx_p;
   rx_n <= fmc_rx_n & sfp_rx_n;
+  -- FIXME: map this correctly
+  rbdata : for I in 0 to NUM_RBS-1 generate
+  begin
+    mgt_data_in(I*2)              <= downlink_mgt_word_array(I);
+    mgt_data_in(I*2+1)            <= downlink_mgt_word_array(I);
+    trig_uplink_mgt_word_array(I) <= mgt_data_out(I*2);
+    daq_uplink_mgt_word_array(I)  <= mgt_data_out(I*2+1);
+  end generate;
 
   mgt_wrapper_inst : entity work.mgt_wrapper
     generic map (
       NUM_GTS => NUM_GTS
       )
     port map (
-      drp_clk => clk40,
+      drp_clk => ipb_clk,
       rxp_in  => rx_p,
       rxn_in  => rx_n,
 
@@ -290,6 +298,8 @@ begin
       data_out => mgt_data_out,
 
       gtrefclk00_in => (others => refclk(0)),
+
+      rxslide_in => (others => '0'),
 
       mon  => mgt_mon,
       ctrl => mgt_ctrl
