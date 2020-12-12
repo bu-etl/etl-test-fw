@@ -1,3 +1,4 @@
 # -*- mode: TCL;-*-
 xdc/pins.xdc
 xdc/timing.xdc
+xdc/lpgbt_multicycle.xdc
