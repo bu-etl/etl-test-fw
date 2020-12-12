@@ -47,4 +47,3 @@ impl:
 
 clean:
 	rm -rf VivadoProject/
-	cd regmap && make clean_regmap
