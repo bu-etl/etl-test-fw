@@ -33,15 +33,9 @@ set_property PACKAGE_PIN AM6 [get_ports {pcie_tx_p[6]}] ;
 set_property PACKAGE_PIN AN4 [get_ports {pcie_tx_p[7]}] ;
 
 # EXTERNAL OSCILLATOR:
-# - based on an ICS8N4Q001L clock generator,
-#   hard-wired to use the first frequency setting, which defaults to 170
-#   MHz according to datasheet, or 200 MHz according to user guide and
-#   schematics.
-# - 1.8V differential signal
-# - connected to an HR bank (-> use LVDS_25 instead of LVDS)
 set_property IOSTANDARD LVDS [get_ports osc_clk_p]  ;
-set_property PACKAGE_PIN G10 [get_ports osc_clk_p] ; # updated
-set_property PACKAGE_PIN F10 [get_ports osc_clk_n] ; # updated
+set_property PACKAGE_PIN AK17 [get_ports osc_clk_p] ; # updated
+set_property PACKAGE_PIN AK16 [get_ports osc_clk_n] ; # updated
 
 set_property PACKAGE_PIN AP8 [get_ports {leds[0]}];
 set_property PACKAGE_PIN H23 [get_ports {leds[1]}];

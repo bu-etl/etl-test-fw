@@ -89,6 +89,8 @@ end etl_test_fw;
 
 architecture behavioral of etl_test_fw is
 
+  signal locked : std_logic;
+
   signal clk_osc : std_logic;
 
   constant NUM_GTS : integer := NUM_SFP + NUM_FMC;
@@ -141,12 +143,15 @@ architecture behavioral of etl_test_fw is
   component system_clocks is
     port (
       reset     : in  std_logic;
-      clk_in200 : in  std_logic;
+      clk_in300 : in  std_logic;
       clk_40    : out std_logic;
       clk_320   : out std_logic;
       locked    : out std_logic
       );
   end component;
+
+  attribute MARK_DEBUG           : string;
+  attribute MARK_DEBUG of locked : signal is "TRUE";
 
 begin
 
@@ -217,10 +222,10 @@ begin
   system_clocks_inst : system_clocks
     port map (
       reset     => std_logic0,
-      clk_in200 => clk_osc,
+      clk_in300 => clk_osc,
       clk_40    => clk40,
       clk_320   => clk320,
-      locked    => open
+      locked    => locked
       );
 
   control_inst : entity work.control

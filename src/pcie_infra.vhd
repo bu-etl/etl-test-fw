@@ -41,73 +41,79 @@ use UNISIM.VComponents.all;
 
 entity pcie_infra is
   port (
-      -- PCIe clock and reset (active low)
-      pcie_sys_clk_p : in std_logic;
-      pcie_sys_clk_n : in std_logic;
-      pcie_sys_rst_n : in std_logic;
-      -- PCIe lanes
-      pcie_rx_p : in std_logic_vector(0 downto 0);
-      pcie_rx_n : in std_logic_vector(0 downto 0);
-      pcie_tx_p : out std_logic_vector(0 downto 0);
-      pcie_tx_n : out std_logic_vector(0 downto 0);
-      -- External oscillator
-      clk_osc : in std_logic;
-      -- IPbus clock and reset
-      ipb_clk : out std_logic;
-      ipb_rst : out std_logic;
-      -- The signals of doom and lesser doom
-      nuke: in std_logic;
-      soft_rst: in std_logic;
-      -- status LEDs
-      leds: out std_logic_vector(1 downto 0);
-      -- IPbus (from / to slaves)
-      ipb_in  : in ipb_rbus;
-      ipb_out : out ipb_wbus
-  );
+    -- PCIe clock and reset (active low)
+    pcie_sys_clk_p : in  std_logic;
+    pcie_sys_clk_n : in  std_logic;
+    pcie_sys_rst_n : in  std_logic;
+    -- PCIe lanes
+    pcie_rx_p      : in  std_logic_vector(0 downto 0);
+    pcie_rx_n      : in  std_logic_vector(0 downto 0);
+    pcie_tx_p      : out std_logic_vector(0 downto 0);
+    pcie_tx_n      : out std_logic_vector(0 downto 0);
+    -- External oscillator
+    clk_osc        : in  std_logic;
+    -- IPbus clock and reset
+    ipb_clk        : out std_logic;
+    ipb_rst        : out std_logic;
+    -- The signals of doom and lesser doom
+    nuke           : in  std_logic;
+    soft_rst       : in  std_logic;
+    -- status LEDs
+    leds           : out std_logic_vector(1 downto 0);
+    -- IPbus (from / to slaves)
+    ipb_in         : in  ipb_rbus;
+    ipb_out        : out ipb_wbus
+    );
 end pcie_infra;
 
 
 architecture rtl of pcie_infra is
 
-  signal clk_ipb, clk_ipb_i : std_logic;
+  signal clk_ipb, clk_ipb_i                                                                  : std_logic;
   signal locked, clk_locked, pcie_user_lnk_up, rst125, rst_ipb, rst_ipb_ctrl, rst_axi, onehz : std_logic;
 
   signal pcie_sys_rst_n_i : std_logic;
 
-  signal axi_ms: axi4mm_ms(araddr(63 downto 0), awaddr(63 downto 0), wdata(63 downto 0));
-  signal axi_sm: axi4mm_sm(rdata(63 downto 0));
+  signal axi_ms : axi4mm_ms(araddr(63 downto 0), awaddr(63 downto 0), wdata(63 downto 0));
+  signal axi_sm : axi4mm_sm(rdata(63 downto 0));
 
   signal ipb_pkt_done : std_logic;
-  signal trans_in : ipbus_trans_in;
-  signal trans_out : ipbus_trans_out;
+  signal trans_in     : ipbus_trans_in;
+  signal trans_out    : ipbus_trans_out;
+
+  attribute MARK_DEBUG                     : string;
+  attribute MARK_DEBUG of clk_locked       : signal is "true";
+  attribute MARK_DEBUG of locked           : signal is "true";
+  attribute MARK_DEBUG of pcie_user_lnk_up : signal is "true";
 
 begin
 
-  sys_rst_n_ibuf: IBUF
+  sys_rst_n_ibuf : IBUF
     port map (
       O => pcie_sys_rst_n_i,
       I => pcie_sys_rst_n
-    );
+      );
 
   --  DCM clock generation for internal bus, ethernet
-  clocks: entity work.clocks_us_serdes
+  clocks : entity work.clocks_us_serdes
     generic map (
-      CLK_FR_FREQ => 200.0
-    )
+      CLK_FR_FREQ  => 300.0,
+      CLK_VCO_FREQ => 960.0
+      )
     port map (
-      clki_fr => clk_osc,
-      clki_125 => axi_ms.aclk,
-      clko_ipb => clk_ipb_i,
-      eth_locked => pcie_user_lnk_up,
-      locked => clk_locked,
-      nuke => nuke,
-      soft_rst => soft_rst,
-      rsto_125 => rst125,
-      rsto_ipb => rst_ipb,
-      rsto_eth => rst_axi,
+      clki_fr       => clk_osc,
+      clki_125      => axi_ms.aclk,
+      clko_ipb      => clk_ipb_i,
+      eth_locked    => pcie_user_lnk_up,
+      locked        => clk_locked,
+      nuke          => nuke,
+      soft_rst      => soft_rst,
+      rsto_125      => rst125,
+      rsto_ipb      => rst_ipb,
+      rsto_eth      => rst_axi,
       rsto_ipb_ctrl => rst_ipb_ctrl,
-      onehz => onehz
-    );
+      onehz         => onehz
+      );
 
   clk_ipb <= clk_ipb_i;
   ipb_clk <= clk_ipb_i;
@@ -119,7 +125,7 @@ begin
   leds <= '0' & (locked and onehz);
 
 
-  dma: entity work.pcie_xdma_axi_us_if
+  dma : entity work.pcie_xdma_axi_us_if
     port map (
       pcie_sys_clk_p => pcie_sys_clk_p,
       pcie_sys_clk_n => pcie_sys_clk_n,
@@ -136,35 +142,35 @@ begin
       axi_sm => axi_sm,
 
       pcie_int_event0 => ipb_pkt_done
-    );
+      );
 
 
-  ipbus_transport_axi: entity work.ipbus_transport_axi_if
+  ipbus_transport_axi : entity work.ipbus_transport_axi_if
     port map (
       ipb_clk => clk_ipb,
       rst_ipb => rst_ipb_ctrl,
-      axi_in => axi_ms,
+      axi_in  => axi_ms,
       axi_out => axi_sm,
 
       pkt_done => ipb_pkt_done,
 
       ipb_trans_rx => trans_in,
       ipb_trans_tx => trans_out
-    );
+      );
 
 
-  ipbus_transactor: entity work.transactor
+  ipbus_transactor : entity work.transactor
     port map (
-      clk => clk_ipb,
-      rst => rst_ipb_ctrl,
-      ipb_out => ipb_out,
-      ipb_in => ipb_in,
-      ipb_req => open,
-      ipb_grant => '1',
-      trans_in => trans_in,
-      trans_out => trans_out,
-      cfg_vector_in => (Others => '0'),
+      clk            => clk_ipb,
+      rst            => rst_ipb_ctrl,
+      ipb_out        => ipb_out,
+      ipb_in         => ipb_in,
+      ipb_req        => open,
+      ipb_grant      => '1',
+      trans_in       => trans_in,
+      trans_out      => trans_out,
+      cfg_vector_in  => (others => '0'),
       cfg_vector_out => open
-    );
+      );
 
 end rtl;
