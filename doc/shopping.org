@@ -2,7 +2,7 @@
 ** Hardware Setup
 The ETL Test Stand Firmware is designed to run on a KCU105 evaluation board: https://www.xilinx.com/products/boards-and-kits/kcu105.html
 #+attr_org: :width 1000px
-[[file:doc/images/kcu_105.png]]
+[[file:images/kcu_105.png]]
 
 The KCU105 board has optics available on 2 SFPs and on a Firefly FMC.
 
