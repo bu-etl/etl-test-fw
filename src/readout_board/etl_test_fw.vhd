@@ -71,15 +71,15 @@ entity etl_test_fw is
     sma_refclk_p : in std_logic;
     sma_refclk_n : in std_logic;
 
-    sfp_tx_p : out std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_tx_n : out std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_rx_p : in  std_logic_vector(NUM_SFP - 1 downto 0);
-    sfp_rx_n : in  std_logic_vector(NUM_SFP - 1 downto 0);
-
-    fmc_tx_p : out std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_tx_n : out std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_rx_p : in  std_logic_vector(NUM_FMC - 1 downto 0);
-    fmc_rx_n : in  std_logic_vector(NUM_FMC - 1 downto 0);
+--    sfp_tx_p : out std_logic_vector(NUM_SFP - 1 downto 0);
+--    sfp_tx_n : out std_logic_vector(NUM_SFP - 1 downto 0);
+--    sfp_rx_p : in  std_logic_vector(NUM_SFP - 1 downto 0);
+--    sfp_rx_n : in  std_logic_vector(NUM_SFP - 1 downto 0);
+--
+--    fmc_tx_p : out std_logic_vector(NUM_FMC - 1 downto 0);
+--    fmc_tx_n : out std_logic_vector(NUM_FMC - 1 downto 0);
+--    fmc_rx_p : in  std_logic_vector(NUM_FMC - 1 downto 0);
+--    fmc_rx_n : in  std_logic_vector(NUM_FMC - 1 downto 0);
 
     -- status LEDs
     leds : out std_logic_vector(7 downto 0)
@@ -267,12 +267,13 @@ begin
 
   end generate;
 
-  fmc_tx_p <= tx_p(9 downto 2);
-  fmc_tx_n <= tx_p(9 downto 2);
-  sfp_tx_p <= tx_p(1 downto 0);
-  sfp_tx_n <= tx_p(1 downto 0);
-  rx_p <= fmc_rx_p & sfp_rx_p;
-  rx_n <= fmc_rx_n & sfp_rx_n;
+  --fmc_tx_p <= tx_p(9 downto 2);
+  --fmc_tx_n <= tx_p(9 downto 2);
+  --sfp_tx_p <= tx_p(1 downto 0);
+  --sfp_tx_n <= tx_p(1 downto 0);
+  --rx_p <= fmc_rx_p & sfp_rx_p;
+  --rx_n <= fmc_rx_n & sfp_rx_n;
+
   -- FIXME: map this correctly
   rbdata : for I in 0 to NUM_RBS-1 generate
   begin
